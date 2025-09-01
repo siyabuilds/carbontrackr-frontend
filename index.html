@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/5708525d29.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="icon" type="image/svg+xml" href="/cropped_circle_image.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carbon Footprint Tracker</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-content">
+        <h1><i class="fa-solid fa-leaf"></i> Footprint Logger</h1>
+        <p class="subtitle">
+          Track your daily carbon emissions and reduce your impact.
+        </p>
+      </div>
+      <button id="add-activity-btn">
+        <i class="fa-solid fa-circle-plus"></i> Add Activity
+      </button>
+    </header>
+
+    <main class="main-content">
+      <div class="dashboard">
+        <div class="summary-section">
+          <div id="total-emissions">
+            <div class="total-emissions">
+              <i class="fa-solid fa-chart-line"></i>
+              <span class="total-label">Total Emissions:</span>
+              <span class="total-value">0.00 kg CO₂</span>
+            </div>
+          </div>
+          <button id="clear-all-btn" class="clear-btn">
+            <i class="fa-solid fa-broom"></i> Clear All Data
+          </button>
+        </div>
+
+        <div id="category-breakdown"></div>
+
+        <div id="visual-summary" class="visual-summary-section">
+          <h3><i class="fa-solid fa-chart-pie"></i> Emissions Breakdown</h3>
+          <div class="chart-container">
+            <canvas id="emissions-chart"></canvas>
+          </div>
+          <div class="chart-legend" id="chart-legend"></div>
+        </div>
+
+        <div class="activities-section">
+          <h2>Activity Log</h2>
+          <div id="activity-logs">
+            <div class="no-activities">
+              <i class="fa-solid fa-seedling"></i>
+              <p>
+                No activities logged yet. Start tracking your carbon footprint!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
