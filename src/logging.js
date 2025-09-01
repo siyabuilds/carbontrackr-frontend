@@ -23,11 +23,48 @@ axios.interceptors.response.use(
   (error) => {
     console.error("API Error:", error);
     if (error.response && error.response.status === 401) {
-    // e.g., clear auth token and reload page to trigger re-auth
-    localStorage.removeItem("authToken");
-    window.location.reload();
+      // e.g., clear auth token and reload page to trigger re-auth
+      localStorage.removeItem("authToken");
+      window.location.reload();
     }
     return Promise.reject(error);
   }
 );
 
+const addActivityLog = async (log) => {
+  try {
+    const response = await axios.post(`${apiUrl}/activities`, log);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding activity log:", error);
+    throw error;
+  }
+};
+
+const getActivityLogs = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/activities`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching activity logs:", error);
+    throw error;
+  }
+};
+
+const deleteActivityLog = async (logId) => {
+  try {
+    await axios.delete(`${apiUrl}/activities/${logId}`);
+  } catch (error) {
+    console.error("Error deleting activity log:", error);
+    throw error;
+  }
+};
+
+const deleteAllActivityLogs = async () => {
+  try {
+    await axios.delete(`${apiUrl}/activities`);
+  } catch (error) {
+    console.error("Error deleting all activity logs:", error);
+    throw error;
+  }
+};
