@@ -15,6 +15,7 @@ import {
   createFilterComponent,
 } from "./filter";
 import { renderEmissionsChart } from "./chart.js";
+import { register, login, logout, isCurrentUserLoggedIn } from "./auth.js";
 
 let activityLogs = loadActivityLogs();
 let selectedCategory = "All";

@@ -1,11 +1,12 @@
 // API functionality for interacting with backend for logs
 import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
+import { getToken } from "./utils/getToken.js";
 
 // Request interceptor: attach auth token if available
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    const token = getToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
