@@ -1,7 +1,12 @@
 import { activityData } from "./activity-data";
 import { showActivityForm } from "../form";
-import { saveActivityLogs, loadActivityLogs } from "./storage";
 import { calculateTotalEmissions } from "./calculations";
+import {
+  addActivityLog,
+  getActivityLogs,
+  deleteActivityLog,
+  deleteAllActivityLogs,
+} from "./logging.js";
 import {
   renderActivityLogs,
   renderTotalEmissions,
@@ -21,7 +26,7 @@ import {
   setupLogoutEventListener,
 } from "./authEvents.js";
 
-let activityLogs = loadActivityLogs();
+let activityLogs = [];
 let selectedCategory = "All";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -60,6 +65,18 @@ const showMainApp = () => {
   document.body.className = "show-main";
   setupEventListeners();
   setupFilterComponent();
+  // load activity logs from backend and update UI
+  fetchAndUpdateLogs();
+};
+
+const fetchAndUpdateLogs = async () => {
+  try {
+    activityLogs = await getActivityLogs();
+    activityLogs = activityLogs.map((log) => ({ ...log, co2: log.value }));
+  } catch (error) {
+    console.error("Failed to load activity logs from backend:", error);
+    activityLogs = [];
+  }
   updateDisplay();
 };
 
@@ -84,9 +101,12 @@ const handleAddActivity = async () => {
   const log = await showActivityForm(activityData);
   if (log) {
     log.timestamp = new Date().toISOString();
-    activityLogs.push(log);
-    saveActivityLogs(activityLogs);
-    updateDisplay();
+    try {
+      await addActivityLog(log);
+      await fetchAndUpdateLogs();
+    } catch (error) {
+      console.error("Failed to add activity log:", error);
+    }
   }
 };
 
@@ -97,9 +117,18 @@ const handleDeleteActivity = async (event) => {
     const confirmed = await confirmDeleteActivity(activity.activity);
 
     if (confirmed) {
-      activityLogs.splice(index, 1);
-      saveActivityLogs(activityLogs);
-      updateDisplay();
+      try {
+        const id = activity.id || activity._id || null;
+        if (id) {
+          await deleteActivityLog(id);
+        } else {
+          // fallback: request server to clear then reload (or just reload)
+          console.warn("Activity missing id; reloading logs from backend");
+        }
+        await fetchAndUpdateLogs();
+      } catch (error) {
+        console.error("Failed to delete activity log:", error);
+      }
     }
   }
 };
@@ -108,9 +137,12 @@ const handleClearAll = async () => {
   const confirmed = await confirmClearAllActivities();
 
   if (confirmed) {
-    activityLogs = [];
-    saveActivityLogs(activityLogs);
-    updateDisplay();
+    try {
+      await deleteAllActivityLogs();
+      await fetchAndUpdateLogs();
+    } catch (error) {
+      console.error("Failed to clear all activity logs:", error);
+    }
   }
 };
 
