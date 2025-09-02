@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getToken } from "./utils/getToken";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export const register = async (email, username, password) => {
@@ -34,5 +35,5 @@ export const logout = () => {
 };
 
 export const isCurrentUserLoggedIn = () => {
-  return !!localStorage.getItem("token");
+  return !!getToken();
 };
