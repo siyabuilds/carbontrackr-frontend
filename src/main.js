@@ -46,13 +46,14 @@ const initializeApp = () => {
   if (isCurrentUserLoggedIn()) {
     if (isTokenValid()) {
       showMainApp();
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "Session Expired",
+        text: "Your session has expired. Please log in again.",
+      });
     }
   } else {
-    Swal.fire({
-      icon: "warning",
-      title: "Session Expired",
-      text: "Your session has expired. Please log in again.",
-    });
     showAuthUI();
   }
 
