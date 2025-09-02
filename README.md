@@ -17,15 +17,14 @@ carbon-footprint-tracker/
 │   ├── cropped_circle_image.png
 │   └── vite.svg
 └── src/                    # Source code
-    ├── activity-data.js    # Emissions data for activities
-    ├── calculations.js     # Emission calculation functions
-    ├── chart.js           # Chart rendering and visualization
-    ├── counter.js         # [Not in use]
-    ├── filter.js          # Category filtering logic
-    ├── main.js            # Main application entry point
-    ├── storage.js         # LocalStorage management
-    ├── style.css          # Application styling
-    └── ui.js              # UI rendering functions
+  ├── activity-data.js    # Emissions data for activities
+  ├── calculations.js     # Emission calculation functions
+  ├── chart.js           # Chart rendering and visualization
+  ├── filter.js          # Category filtering logic
+  ├── logging.js          # Handles logging of user activities and communicates with the backend API for data persistence and retrieval.
+  ├── main.js            # Main application entry point
+  ├── style.css          # Application styling
+  └── ui.js              # UI rendering functions
 ```
 
 ## 🛠️ Technical Stack
@@ -35,7 +34,7 @@ carbon-footprint-tracker/
 - **Charting**: Chart.js for data visualization
 - **Modals**: SweetAlert2 for user interactions
 - **Styling**: CSS3 with custom properties
-- **Storage**: Browser localStorage for data persistence
+- **Storage**: Data is persisted via the backend API (see `src/logging.js`)
 
 ## 📊 Core Modules
 
@@ -43,7 +42,7 @@ For all the **Core Modules** and **Functions** breakdown, please refer to [API_D
 
 ## 🎯 Application Flow
 
-1. **Initialization**: Load saved activities from localStorage
+1. **Initialization**: Load saved activities from the backend API
 2. **Display**: Render total emissions, category breakdown, and activity list
 3. **User Interaction**: 
    - Add new activities via modal form
@@ -51,7 +50,7 @@ For all the **Core Modules** and **Functions** breakdown, please refer to [API_D
    - Filter activities by category
    - Clear all data
 4. **Data Updates**: Automatically recalculate and re-render on changes
-5. **Persistence**: Save all changes to localStorage
+5. **Persistence**: Save all changes to the backend API
 
 ## 🔧 Development
 
