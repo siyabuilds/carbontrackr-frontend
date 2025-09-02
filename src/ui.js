@@ -23,7 +23,7 @@ export const createActivityLogElement = (log, index) => {
 
   const timestamp = document.createElement("span");
   timestamp.className = "timestamp";
-  timestamp.textContent = new Date(log.timestamp).toLocaleDateString();
+  timestamp.textContent = new Date(log.date).toLocaleDateString();
 
   activityInfo.appendChild(categoryBadge);
   activityInfo.appendChild(activityName);

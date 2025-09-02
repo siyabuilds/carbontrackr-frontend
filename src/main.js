@@ -114,7 +114,7 @@ const setupEventListeners = () => {
 const handleAddActivity = async () => {
   const log = await showActivityForm(activityData);
   if (log) {
-    log.timestamp = new Date().toISOString();
+    log.date = new Date().toISOString();
     try {
       await addActivityLog(log);
       await fetchAndUpdateLogs();
