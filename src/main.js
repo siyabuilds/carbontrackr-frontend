@@ -16,15 +16,52 @@ import {
 } from "./filter";
 import { renderEmissionsChart } from "./chart.js";
 import { register, login, logout, isCurrentUserLoggedIn } from "./auth.js";
+import {
+  setupAuthEventListeners,
+  setupLogoutEventListener,
+} from "./authEvents.js";
 
 let activityLogs = loadActivityLogs();
 let selectedCategory = "All";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initializeApp();
+});
+
+const initializeApp = () => {
+  // Setup auth event listeners
+  const authContainer = document.getElementById("auth-container");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  setupAuthEventListeners(authContainer);
+  setupLogoutEventListener(logoutBtn);
+
+  if (isCurrentUserLoggedIn()) {
+    showMainApp();
+  } else {
+    showAuthUI();
+  }
+
+  // Listen for auth state changes
+  window.addEventListener("authStateChanged", (event) => {
+    if (event.detail.loggedIn) {
+      showMainApp();
+    } else {
+      showAuthUI();
+    }
+  });
+};
+
+const showAuthUI = () => {
+  document.body.className = "show-auth";
+};
+
+const showMainApp = () => {
+  document.body.className = "show-main";
   setupEventListeners();
   setupFilterComponent();
   updateDisplay();
-});
+};
 
 const setupEventListeners = () => {
   // Add activity button

@@ -18,56 +18,134 @@
     <link rel="stylesheet" href="src/style.css" />
   </head>
   <body>
-    <header class="app-header">
-      <div class="header-content">
-        <h1><i class="fa-solid fa-leaf"></i> Footprint Logger</h1>
-        <p class="subtitle">
-          Track your daily carbon emissions and reduce your impact.
-        </p>
-      </div>
-      <button id="add-activity-btn">
-        <i class="fa-solid fa-circle-plus"></i> Add Activity
-      </button>
-    </header>
+    <!-- Authentication UI Container -->
+    <div id="auth-container" class="auth-container">
+      <div class="auth-modal">
+        <div class="auth-header">
+          <h2><i class="fa-solid fa-leaf"></i> Welcome to Footprint Logger</h2>
+          <p>Track your carbon emissions and make a difference</p>
+        </div>
 
-    <main class="main-content">
-      <div class="dashboard">
-        <div class="summary-section">
-          <div id="total-emissions">
-            <div class="total-emissions">
-              <i class="fa-solid fa-chart-line"></i>
-              <span class="total-label">Total Emissions:</span>
-              <span class="total-value">0.00 kg CO₂</span>
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Login</button>
+          <button class="auth-tab" data-tab="register">Register</button>
+        </div>
+
+        <div class="auth-forms">
+          <form class="auth-form login-form active" id="login-form">
+            <div class="form-group">
+              <label for="login-identifier">Username or Email</label>
+              <input type="text" id="login-identifier" required />
+              <small class="field-hint"
+                >Enter your username or email address</small
+              >
             </div>
-          </div>
-          <button id="clear-all-btn" class="clear-btn">
-            <i class="fa-solid fa-broom"></i> Clear All Data
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required />
+              <small class="field-hint">Enter your password</small>
+            </div>
+            <button type="submit" class="auth-btn">
+              <i class="fa-solid fa-sign-in-alt"></i> Login
+            </button>
+          </form>
+
+          <form class="auth-form register-form" id="register-form">
+            <div class="form-group">
+              <label for="register-email">Email</label>
+              <input type="email" id="register-email" required />
+              <small class="field-hint">Enter a valid email address</small>
+            </div>
+            <div class="form-group">
+              <label for="register-username">Username</label>
+              <input type="text" id="register-username" required />
+              <small class="field-hint">Choose a unique username</small>
+            </div>
+            <div class="form-group">
+              <label for="register-fullname">Full Name</label>
+              <input type="text" id="register-fullname" required />
+              <small class="field-hint">Enter your full name</small>
+            </div>
+            <div class="form-group">
+              <label for="register-password">Password</label>
+              <input
+                type="password"
+                id="register-password"
+                required
+                minlength="6"
+              />
+              <small class="field-hint"
+                >Password must be at least 6 characters</small
+              >
+            </div>
+            <button type="submit" class="auth-btn">
+              <i class="fa-solid fa-user-plus"></i> Register
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="main-app-container">
+      <header class="app-header">
+        <div class="header-content">
+          <h1><i class="fa-solid fa-leaf"></i> Footprint Logger</h1>
+          <p class="subtitle">
+            Track your daily carbon emissions and reduce your impact.
+          </p>
+        </div>
+        <div class="header-actions">
+          <button id="add-activity-btn">
+            <i class="fa-solid fa-circle-plus"></i> Add Activity
+          </button>
+          <button id="logout-btn" class="logout-btn">
+            <i class="fa-solid fa-sign-out-alt"></i> Logout
           </button>
         </div>
+      </header>
 
-        <div id="category-breakdown"></div>
-
-        <div id="visual-summary" class="visual-summary-section">
-          <h3><i class="fa-solid fa-chart-pie"></i> Emissions Breakdown</h3>
-          <div class="chart-container">
-            <canvas id="emissions-chart"></canvas>
+      <main class="main-content">
+        <div class="dashboard">
+          <div class="summary-section">
+            <div id="total-emissions">
+              <div class="total-emissions">
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="total-label">Total Emissions:</span>
+                <span class="total-value">0.00 kg CO₂</span>
+              </div>
+            </div>
+            <button id="clear-all-btn" class="clear-btn">
+              <i class="fa-solid fa-broom"></i> Clear All Data
+            </button>
           </div>
-          <div class="chart-legend" id="chart-legend"></div>
-        </div>
 
-        <div class="activities-section">
-          <h2>Activity Log</h2>
-          <div id="activity-logs">
-            <div class="no-activities">
-              <i class="fa-solid fa-seedling"></i>
-              <p>
-                No activities logged yet. Start tracking your carbon footprint!
-              </p>
+          <div id="category-breakdown"></div>
+
+          <div id="visual-summary" class="visual-summary-section">
+            <h3><i class="fa-solid fa-chart-pie"></i> Emissions Breakdown</h3>
+            <div class="chart-container">
+              <canvas id="emissions-chart"></canvas>
+            </div>
+            <div class="chart-legend" id="chart-legend"></div>
+          </div>
+
+          <div class="activities-section">
+            <h2>Activity Log</h2>
+            <div id="activity-logs">
+              <div class="no-activities">
+                <i class="fa-solid fa-seedling"></i>
+                <p>
+                  No activities logged yet. Start tracking your carbon
+                  footprint!
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
+
     <script type="module" src="src/main.js"></script>
   </body>
 </html>
