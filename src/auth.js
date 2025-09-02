@@ -1,11 +1,10 @@
-import axios from "axios";
+import api from "./api.js";
 import { getToken } from "./utils/getToken";
-const apiUrl = import.meta.env.VITE_API_URL;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const register = async (email, username, password, fullName) => {
   try {
-    const response = await axios.post(`${apiUrl}/api/register`, {
+    const response = await api.post("/api/register", {
       email,
       username,
       password,
@@ -20,7 +19,7 @@ export const register = async (email, username, password, fullName) => {
 
 export const login = async (identifier, password) => {
   try {
-    const response = await axios.post(`${apiUrl}/api/login`, {
+    const response = await api.post("/api/login", {
       email: identifier,
       username: identifier,
       password,
