@@ -18,11 +18,11 @@ export const register = async (email, username, password, fullName) => {
   }
 };
 
-export const login = async (email, username, password) => {
+export const login = async (identifier, password) => {
   try {
     const response = await axios.post(`${apiUrl}/api/login`, {
-      email,
-      username,
+      email: identifier,
+      username: identifier,
       password,
     });
     localStorage.setItem("token", response.data.token);
