@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
 });
 
-const initializeApp = () => {
+const initializeApp = async () => {
   // Setup auth event listeners
   const authContainer = document.getElementById("auth-container");
   const logoutBtn = document.getElementById("logout-btn");
@@ -44,13 +44,17 @@ const initializeApp = () => {
   setupLogoutEventListener(logoutBtn);
 
   if (isCurrentUserLoggedIn()) {
-    if (isTokenValid()) {
+    const valid = await isTokenValid();
+    if (valid) {
       showMainApp();
     } else {
       Swal.fire({
         icon: "warning",
         title: "Session Expired",
         text: "Your session has expired. Please log in again.",
+      }).then(() => {
+        localStorage.removeItem("token");
+        showAuthUI();
       });
     }
   } else {
