@@ -25,6 +25,8 @@ import {
   setupAuthEventListeners,
   setupLogoutEventListener,
 } from "./authEvents.js";
+import { isTokenValid } from "./utils/validateToke.js";
+import Swal from "sweetalert2";
 
 let activityLogs = [];
 let selectedCategory = "All";
@@ -42,8 +44,15 @@ const initializeApp = () => {
   setupLogoutEventListener(logoutBtn);
 
   if (isCurrentUserLoggedIn()) {
-    showMainApp();
+    if (isTokenValid()) {
+      showMainApp();
+    }
   } else {
+    Swal.fire({
+      icon: "warning",
+      title: "Session Expired",
+      text: "Your session has expired. Please log in again.",
+    });
     showAuthUI();
   }
 
