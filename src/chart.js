@@ -110,10 +110,9 @@ const renderCustomLegend = (categoryTotals, legendContainer) => {
           <div class="legend-color" style="background-color: ${
             CATEGORY_COLORS[category]
           }"></div>
-          <span class="legend-label">${category}</span>
-          <span class="legend-value">${formatEmissions(
-            value
-          )} (${percentage}%)</span>
+          <span class="legend-text">${category}: ${formatEmissions(
+        value
+      )} (${percentage}%)</span>
         </div>
       `;
     })
