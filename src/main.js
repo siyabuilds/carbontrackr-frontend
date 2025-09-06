@@ -278,6 +278,8 @@ const fetchAndDisplayAverageEmissions = async () => {
     const chartContainer = document.querySelector(
       "#average-view .chart-container"
     );
+
+    renderAverageEmissionsChart(averageData, chartContainer, legendContainer);
   } catch (error) {
     console.error("Failed to fetch average emissions:", error);
     // Show error message in the average view
