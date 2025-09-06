@@ -95,6 +95,16 @@
             Track your daily carbon emissions and reduce your impact.
           </p>
         </div>
+        <div class="header-nav">
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" id="dashboard-btn">
+              <i class="fa-solid fa-chart-bar"></i> Dashboard
+            </button>
+            <button class="view-toggle-btn" id="average-btn">
+              <i class="fa-solid fa-chart-pie"></i> Average
+            </button>
+          </div>
+        </div>
         <div class="header-actions">
           <button id="add-activity-btn">
             <i class="fa-solid fa-circle-plus"></i> Add Activity
@@ -106,40 +116,72 @@
       </header>
 
       <main class="main-content">
-        <div class="dashboard">
-          <div class="summary-section">
-            <div id="total-emissions">
-              <div class="total-emissions">
-                <i class="fa-solid fa-chart-line"></i>
-                <span class="total-label">Total Emissions:</span>
-                <span class="total-value">0.00 kg CO₂</span>
+        <div class="view-section active" id="dashboard-view">
+          <div class="dashboard">
+            <div class="summary-section">
+              <div id="total-emissions">
+                <div class="total-emissions">
+                  <i class="fa-solid fa-chart-line"></i>
+                  <span class="total-label">Total Emissions:</span>
+                  <span class="total-value">0.00 kg CO₂</span>
+                </div>
+              </div>
+              <button id="clear-all-btn" class="clear-btn">
+                <i class="fa-solid fa-broom"></i> Clear All Data
+              </button>
+            </div>
+
+            <div id="category-breakdown"></div>
+
+            <div id="visual-summary" class="visual-summary-section">
+              <h3><i class="fa-solid fa-chart-pie"></i> Emissions Breakdown</h3>
+              <div class="chart-container">
+                <canvas id="emissions-chart"></canvas>
+              </div>
+              <div class="chart-legend" id="chart-legend"></div>
+            </div>
+
+            <div class="activities-section">
+              <h2>Activity Log</h2>
+              <div id="activity-logs">
+                <div class="no-activities">
+                  <i class="fa-solid fa-seedling"></i>
+                  <p>
+                    No activities logged yet. Start tracking your carbon
+                    footprint!
+                  </p>
+                </div>
               </div>
             </div>
-            <button id="clear-all-btn" class="clear-btn">
-              <i class="fa-solid fa-broom"></i> Clear All Data
-            </button>
           </div>
+        </div>
 
-          <div id="category-breakdown"></div>
-
-          <div id="visual-summary" class="visual-summary-section">
-            <h3><i class="fa-solid fa-chart-pie"></i> Emissions Breakdown</h3>
-            <div class="chart-container">
-              <canvas id="emissions-chart"></canvas>
+        <!-- Average Emissions View -->
+        <div class="view-section" id="average-view">
+          <div class="average-container">
+            <div class="summary-section">
+              <h2>
+                <i class="fa-solid fa-chart-pie"></i> Average Carbon Emissions
+              </h2>
+              <p class="section-description">
+                View the average carbon emissions across all users by category.
+              </p>
             </div>
-            <div class="chart-legend" id="chart-legend"></div>
-          </div>
 
-          <div class="activities-section">
-            <h2>Activity Log</h2>
-            <div id="activity-logs">
-              <div class="no-activities">
-                <i class="fa-solid fa-seedling"></i>
-                <p>
-                  No activities logged yet. Start tracking your carbon
-                  footprint!
-                </p>
+            <div class="visual-summary-section">
+              <h3>
+                <i class="fa-solid fa-chart-line"></i> Average Emissions
+                Breakdown
+              </h3>
+              <div class="chart-container">
+                <!-- Ensure the canvas is created correctly -->
+                <canvas
+                  id="average-emissions-chart"
+                  width="400"
+                  height="400"
+                ></canvas>
               </div>
+              <div class="chart-legend" id="average-chart-legend"></div>
             </div>
           </div>
         </div>

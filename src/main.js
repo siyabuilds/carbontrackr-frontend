@@ -6,6 +6,7 @@ import {
   getActivityLogs,
   deleteActivityLog,
   deleteAllActivityLogs,
+  getAverageEmissions,
 } from "./logging.js";
 import {
   renderActivityLogs,
@@ -19,7 +20,7 @@ import {
   filterLogsByCategory,
   createFilterComponent,
 } from "./filter";
-import { renderEmissionsChart } from "./chart.js";
+import { renderEmissionsChart, renderAverageEmissionsChart } from "./chart.js";
 import { register, login, logout, isCurrentUserLoggedIn } from "./auth.js";
 import {
   setupAuthEventListeners,
@@ -79,8 +80,17 @@ const showMainApp = () => {
   document.body.className = "show-main";
   setupEventListeners();
   setupFilterComponent();
+
+  // Hide all views initially
+  document.querySelectorAll(".view-section").forEach((section) => {
+    section.classList.remove("active");
+  });
+
   // load activity logs from backend and update UI
   fetchAndUpdateLogs();
+
+  // Initialize dashboard view as active
+  toggleView("dashboard");
 };
 
 const fetchAndUpdateLogs = async () => {
@@ -109,6 +119,20 @@ const setupEventListeners = () => {
   document
     .getElementById("activity-logs")
     .addEventListener("click", handleDeleteActivity);
+
+  /**
+   * View toggle buttons
+   */
+
+  // Dashboard view
+  document
+    .getElementById("dashboard-btn")
+    .addEventListener("click", () => toggleView("dashboard"));
+
+  // Average emissions view
+  document
+    .getElementById("average-btn")
+    .addEventListener("click", () => toggleView("average"));
 };
 
 const handleAddActivity = async () => {
@@ -200,4 +224,68 @@ const setupFilterComponent = () => {
   });
 
   activitiesHeading.insertAdjacentElement("afterend", filterComponent);
+};
+
+// Toggle between dashboard and average emissions views
+const toggleView = async (viewType) => {
+  console.log(`Switching to view: ${viewType}`);
+
+  // Hide all view sections first
+  document.querySelectorAll(".view-section").forEach((section) => {
+    section.classList.remove("active");
+  });
+
+  // Update toggle buttons - remove active class from all
+  document.querySelectorAll(".view-toggle-btn").forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  if (viewType === "dashboard") {
+    // Activate dashboard
+    document.getElementById("dashboard-btn").classList.add("active");
+    const dashboardView = document.getElementById("dashboard-view");
+    dashboardView.classList.add("active");
+    console.log("Dashboard view activated:", dashboardView);
+    updateDisplay();
+  } else if (viewType === "average") {
+    // Activate average emissions
+    document.getElementById("average-btn").classList.add("active");
+    const averageView = document.getElementById("average-view");
+    averageView.classList.add("active");
+    console.log("Average view activated:", averageView);
+
+    // Force a small delay to ensure the view is rendered before we try to access the canvas
+    setTimeout(() => {
+      fetchAndDisplayAverageEmissions();
+    }, 100);
+  }
+};
+
+// Fetch and display average emissions data
+const fetchAndDisplayAverageEmissions = async () => {
+  // Show loading state
+  const legendContainer = document.getElementById("average-chart-legend");
+  legendContainer.innerHTML = `
+    <div class="loading-indicator">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      <p>Loading average emissions data...</p>
+    </div>
+  `;
+
+  try {
+    let averageData = await getAverageEmissions();
+    // Get the chart container
+    const chartContainer = document.querySelector(
+      "#average-view .chart-container"
+    );
+  } catch (error) {
+    console.error("Failed to fetch average emissions:", error);
+    // Show error message in the average view
+    document.getElementById("average-chart-legend").innerHTML = `
+      <div class="no-data-message">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>Failed to load average emissions data.</p>
+      </div>
+    `;
+  }
 };
