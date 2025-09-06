@@ -39,3 +39,13 @@ export const deleteAllActivityLogs = async () => {
     throw error;
   }
 };
+
+export const getAverageEmissions = async () => {
+  try {
+    const response = await api.get("/api/activities/average-emissions");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching average emissions:", error);
+    throw error;
+  }
+};
