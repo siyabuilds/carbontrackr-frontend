@@ -59,3 +59,13 @@ export const getLeaderboard = async () => {
     throw error;
   }
 };
+
+export const getCurrentStreak = async () => {
+  try {
+    const response = await api.get("/api/activities/current-streak");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current streak:", error);
+    throw error;
+  }
+};
