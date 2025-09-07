@@ -1,448 +1,218 @@
-# API Documentation
+# API & Module Documentation
 
-## 📋 Function Reference
-
-### Main Application (`main.js`)
-
-#### `setupEventListeners()`
-
-Sets up all DOM event listeners for the application.
-
-- **Parameters**: None
-- **Returns**: `void`
-- **Side Effects**: Binds click events to buttons and activity logs
-
-#### `setupFilterComponent()`
-
-Creates and inserts the category filter component into the DOM.
-
-- **Parameters**: None
-- **Returns**: `void`
-- **Side Effects**: Modifies DOM structure
-
-#### `updateDisplay()`
-
-Updates all UI components with current data and filters.
-
-- **Parameters**: None
-- **Returns**: `void`
-- **Side Effects**: Re-renders all UI components
-
-#### `handleAddActivity()`
-
-Handles the add activity button click event.
-
-- **Parameters**: None
-- **Returns**: `Promise<void>`
-- **Side Effects**: Shows modal, updates activity logs, saves to storage
-
-#### `handleDeleteActivity(event)`
-
-Handles delete button clicks using event delegation.
-
-- **Parameters**:
-  - `event`: `Event` - The click event
-- **Returns**: `Promise<void>`
-- **Side Effects**: Removes activity from logs, updates storage
-
-#### `handleClearAll()`
-
-Handles the clear all data button click.
-
-- **Parameters**: None
-- **Returns**: `Promise<void>`
-- **Side Effects**: Clears all activity logs, updates storage
+This document provides a complete reference for the CarbonTrackr frontend app, including all modules, public functions, and API endpoints.
 
 ---
 
-### Activity Data (`activity-data.js`)
+## 📦 Modules Overview
 
-#### `activityData`
+- **main.js**: App entry point, event flow, and initialization
+- **activity-data.js**: Emission factors for all activities
+- **calculations.js**: Emission calculations and formatting
+- **api.js**: Axios instance, request/response interceptors, auth token handling
+- **auth.js**: User authentication (register, login, logout, session check)
+- **authEvents.js**: Auth form validation, event listeners, and state management
+- **logging.js**: CRUD for activity logs, leaderboard, and averages (API sync)
+- **ui.js**: UI rendering for logs, totals, breakdowns, and leaderboard
+- **chart.js**: Chart.js integration for emissions and averages
+- **filter.js**: Category filtering utilities and UI
+- **form.js**: Modal activity form (SweetAlert2)
+- **utils/**: Token management and validation
 
-Object containing emission factors for all activities.
+---
 
-- **Type**: `Object`
-- **Structure**:
+## 🌐 API Endpoints (via logging.js & auth.js)
 
-```javascript
+### Activity Log Endpoints
+
+- `POST   /api/activities` → Add a new activity log
+- `GET    /api/activities` → Get all activity logs for user
+- `DELETE /api/activities/:id` → Delete a specific activity log
+- `DELETE /api/activities` → Delete all activity logs
+- `GET    /api/activities/average-emissions` → Get average emissions by category (all users)
+- `GET    /api/activities/leaderboard` → Get leaderboard data
+
+### Auth Endpoints
+
+- `POST   /api/register` → Register a new user
+- `POST   /api/login` → Login (returns JWT token)
+- `GET    /api/validate` → Validate JWT token
+
+---
+
+## 🛠️ Public Functions by Module
+
+### main.js
+
+- `initializeApp()` — App startup, auth check, and event listeners
+- `setupEventListeners()` — Button and view event bindings
+- `setupFilterComponent()` — Renders category filter dropdown
+- `updateDisplay()` — Updates all UI with current data
+- `handleAddActivity()` — Modal form for new activity
+- `handleDeleteActivity(event)` — Delete activity by index
+- `handleClearAll()` — Clear all activities
+
+### activity-data.js
+
+- `activityData` — Object of all categories and activities with emission factors
+
+### calculations.js
+
+- `calculateTotalEmissions(logs)` — Sum total CO₂ for logs
+- `calculateEmissionsByCategory(logs)` — Group emissions by category
+- `formatEmissions(value)` — Format value as "X.XX kg CO₂"
+
+### api.js
+
+- `api` — Preconfigured Axios instance with:
+  - Auth token injection (request interceptor)
+  - 401 auto-logout (response interceptor)
+
+### auth.js
+
+- `register(email, username, password, fullName)` — Register user
+- `login(identifier, password)` — Login (username or email)
+- `logout()` — Remove token
+- `isCurrentUserLoggedIn()` — Check for token
+
+### authEvents.js
+
+- `setupAuthEventListeners(container)` — Tab switching, form submit
+- `setupLogoutEventListener(logoutBtn)` — Logout button
+
+### logging.js
+
+- `addActivityLog(log)` — Add activity (POST)
+- `getActivityLogs()` — Get all activities (GET)
+- `deleteActivityLog(logId)` — Delete by ID (DELETE)
+- `deleteAllActivityLogs()` — Delete all (DELETE)
+- `getAverageEmissions()` — Get average emissions (GET)
+- `getLeaderboard()` — Get leaderboard (GET)
+
+### ui.js
+
+- `createActivityLogElement(log, index)` — DOM for activity log
+- `renderActivityLogs(logs, container)` — Render logs list
+- `renderTotalEmissions(total, container)` — Show total
+- `renderCategoryBreakdown(logs, container)` — Show breakdown
+- `confirmDeleteActivity(activityName)` — SweetAlert2 confirm
+- `confirmClearAllActivities()` — SweetAlert2 confirm
+- `renderLeaderboard(data, container)` — Leaderboard table
+
+### chart.js
+
+- `renderEmissionsChart(logs, chartContainer, legendContainer)` — Dashboard chart
+- `renderAverageEmissionsChart(data, chartContainer, legendContainer)` — Average chart
+- `renderCustomLegend(categoryTotals, legendContainer)` — Custom legend
+- `renderNoDataMessage(chartContainer, legendContainer, isAverage)` — No data UI
+- `CATEGORY_COLORS` — Category color map
+
+### filter.js
+
+- `getCategories()` — List all categories
+- `filterLogsByCategory(logs, selectedCategory)` — Filter logs
+- `createFilterComponent(categories, onFilterChange)` — Dropdown UI
+
+### form.js
+
+- `showActivityForm(activityData)` — Modal form (SweetAlert2)
+
+### utils/
+
+- `getToken()` — Get JWT from localStorage
+- `isTokenValid()` — Validate token with backend
+
+---
+
+## 🗂️ Data Structures
+
+### ActivityLog
+
+```js
 {
-  [categoryName]: {
-    [activityName]: number // CO₂ emissions in kg
-  }
+  category: string,    // e.g. "Transport"
+  activity: string,    // e.g. "Car (10km)"
+  co2: number,         // CO₂ in kg
+  date: string         // ISO timestamp
 }
 ```
 
----
+### CategoryTotals
 
-### Calculations (`calculations.js`)
-
-#### `calculateTotalEmissions(logs)`
-
-Calculates total CO₂ emissions from activity logs.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - Array of activity logs
-- **Returns**: `number` - Total emissions in kg CO₂
-- **Example**:
-
-```javascript
-const total = calculateTotalEmissions([
-  { co2: 2.4, category: "Transport", activity: "Car" },
-  { co2: 1.5, category: "Food", activity: "Chicken" },
-]);
-// Returns: 3.9
-```
-
-#### `calculateEmissionsByCategory(logs)`
-
-Groups emissions by category.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - Array of activity logs
-- **Returns**: `Object` - Object with category totals
-- **Example**:
-
-```javascript
-const breakdown = calculateEmissionsByCategory(logs);
-// Returns: { "Transport": 2.4, "Food": 1.5 }
-```
-
-#### `formatEmissions(value)`
-
-Formats emission values for display.
-
-- **Parameters**:
-  - `value`: `number` - Emission value in kg
-- **Returns**: `string` - Formatted string
-- **Example**:
-
-```javascript
-formatEmissions(2.456); // Returns: "2.46 kg CO₂"
-```
-
----
-
-### Storage
-
-Activity logs are persisted on the backend API. The client communicates via the functions exposed in `src/logging.js`:
-
-- `addActivityLog(log)` - POST a new activity to the server
-- `getActivityLogs()` - GET all activities
-- `deleteActivityLog(logId)` - DELETE a specific activity
-- `deleteAllActivityLogs()` - DELETE all activities
-
----
-
-### UI Rendering (`ui.js`)
-
-#### `createActivityLogElement(log, index)`
-
-Creates a DOM element for an activity log.
-
-- **Parameters**:
-  - `log`: `ActivityLog` - Activity log object
-  - `index`: `number` - Array index for deletion
-- **Returns**: `HTMLElement` - DOM element
-- **Structure**:
-
-```html
-<div class="activity-log-item">
-  <div class="activity-info">...</div>
-  <div class="activity-emissions">...</div>
-</div>
-```
-
-#### `renderActivityLogs(logs, container)`
-
-Renders activity logs in the specified container.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - Filtered activity logs
-  - `container`: `HTMLElement` - Container element
-- **Returns**: `void`
-- **Side Effects**: Updates DOM content
-
-#### `renderTotalEmissions(totalEmissions, container)`
-
-Updates the total emissions display.
-
-- **Parameters**:
-  - `totalEmissions`: `number` - Total emissions value
-  - `container`: `HTMLElement` - Container element
-- **Returns**: `void`
-- **Side Effects**: Updates DOM content
-
-#### `renderCategoryBreakdown(logs, container)`
-
-Renders emissions breakdown by category.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - Activity logs
-  - `container`: `HTMLElement` - Container element
-- **Returns**: `void`
-- **Side Effects**: Updates DOM content
-
-#### `confirmDeleteActivity(activityName)`
-
-Shows confirmation dialog for activity deletion.
-
-- **Parameters**:
-  - `activityName`: `string` - Name of activity to delete
-- **Returns**: `Promise<boolean>` - User confirmation result
-- **Library**: Uses SweetAlert2
-
-#### `confirmClearAllActivities()`
-
-Shows confirmation dialog for clearing all data.
-
-- **Parameters**: None
-- **Returns**: `Promise<boolean>` - User confirmation result
-- **Library**: Uses SweetAlert2
-
----
-
-### Chart Visualization (`chart.js`)
-
-#### `renderEmissionsChart(logs, chartContainer, legendContainer)`
-
-Renders a doughnut chart showing emissions breakdown.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - Activity logs for chart
-  - `chartContainer`: `HTMLElement` - Chart canvas container
-  - `legendContainer`: `HTMLElement` - Legend container
-- **Returns**: `void`
-- **Side Effects**: Creates/updates Chart.js instance
-
-#### `renderCustomLegend(categoryTotals, legendContainer)`
-
-Renders a custom legend for the chart.
-
-- **Parameters**:
-  - `categoryTotals`: `Object` - Category emission totals
-  - `legendContainer`: `HTMLElement` - Legend container
-- **Returns**: `void`
-- **Side Effects**: Updates DOM content
-
-#### `renderNoDataMessage(chartContainer, legendContainer)`
-
-Displays message when no data is available.
-
-- **Parameters**:
-  - `chartContainer`: `HTMLElement` - Chart container
-  - `legendContainer`: `HTMLElement` - Legend container
-- **Returns**: `void`
-- **Side Effects**: Clears chart and shows message
-
-#### `CATEGORY_COLORS`
-
-Object mapping categories to their display colors.
-
-- **Type**: `Object`
-- **Structure**:
-
-```javascript
+```js
 {
-  Transport: "#2196f3",
-  Food: "#ff9800",
-  Energy: "#9c27b0",
-  // ...
+  [category: string]: number // e.g. { Transport: 5.2, Food: 3.8 }
 }
+```
+
+### EmissionFactor
+
+```js
+number; // CO₂ in kg per activity unit
 ```
 
 ---
 
-### Filtering (`filter.js`)
+## 💡 Usage Examples
 
-#### `getCategories()`
+### Add a New Activity
 
-Extracts available categories from activity data.
-
-- **Parameters**: None
-- **Returns**: `Array<string>` - Array of category names
-- **Example**:
-
-```javascript
-getCategories(); // Returns: ["Transport", "Food", "Energy", ...]
-```
-
-#### `filterLogsByCategory(logs, selectedCategory)`
-
-Filters activity logs by selected category.
-
-- **Parameters**:
-  - `logs`: `Array<ActivityLog>` - All activity logs
-  - `selectedCategory`: `string` - Category to filter by ("All" for no filter)
-- **Returns**: `Array<ActivityLog>` - Filtered logs
-- **Example**:
-
-```javascript
-const filtered = filterLogsByCategory(logs, "Transport");
-// Returns only transport activities
-```
-
-#### `createFilterComponent(categories, onFilterChange)`
-
-Creates a filter dropdown component.
-
-- **Parameters**:
-  - `categories`: `Array<string>` - Available categories
-  - `onFilterChange`: `Function` - Callback for filter changes
-- **Returns**: `HTMLElement` - Filter component
-- **Callback Signature**: `(selectedCategory: string) => void`
-
----
-
-### Form Management (`form.js`)
-
-#### `showActivityForm(activityData)`
-
-Shows the activity input form modal.
-
-- **Parameters**:
-  - `activityData`: `Object` - Activity data with emission factors
-- **Returns**: `Promise<ActivityLog|null>` - Activity log or null if cancelled
-- **Library**: Uses SweetAlert2
-- **Example**:
-
-```javascript
-const activity = await showActivityForm(activityData);
-if (activity) {
-  // User submitted form
-  console.log(activity); // { category, activity, co2 }
-}
-```
-
-#### `generateCategoryOptions(activityData)`
-
-Generates HTML options for category dropdown.
-
-- **Parameters**:
-  - `activityData`: `Object` - Activity data
-- **Returns**: `string` - HTML option elements
-- **Private Function**: Internal use only
-
-#### `setupCategoryChangeHandler(catSelect, actSelect, activityData)`
-
-Sets up category dropdown change handler.
-
-- **Parameters**:
-  - `catSelect`: `HTMLSelectElement` - Category select element
-  - `actSelect`: `HTMLSelectElement` - Activity select element
-  - `activityData`: `Object` - Activity data
-- **Returns**: `void`
-- **Private Function**: Internal use only
-
-#### `getFormHTML(categoryOptions)`
-
-Generates HTML for the activity form.
-
-- **Parameters**:
-  - `categoryOptions`: `string` - HTML option elements
-- **Returns**: `string` - Complete form HTML
-- **Private Function**: Internal use only
-
----
-
-## 🔧 Data Types
-
-### `ActivityLog`
-
-Represents a single activity log entry.
-
-```javascript
-{
-  category: string,    // Activity category (e.g., "Transport")
-  activity: string,    // Specific activity (e.g., "Car (10km)")
-  co2: number,         // CO₂ emissions in kg
-  timestamp: string    // ISO timestamp string
-}
-```
-
-### `CategoryTotals`
-
-Object mapping categories to their total emissions.
-
-```javascript
-{
-  [categoryName]: number // Total emissions for category
-}
-```
-
-### `EmissionFactor`
-
-Represents the CO₂ emission factor for an activity.
-
-```javascript
-number; // CO₂ emissions in kg per activity unit
-```
-
----
-
-## 🎯 Usage Examples
-
-### Adding a New Activity Programmatically
-
-```javascript
-// Create activity log
-const newActivity = {
+```js
+const log = {
   category: "Transport",
   activity: "Car (10km)",
   co2: 2.4,
-  timestamp: new Date().toISOString(),
+  date: new Date().toISOString(),
 };
-
-// Add to logs
-activityLogs.push(newActivity);
-
-// Save and update display
-saveActivityLogs(activityLogs);
+await addActivityLog(log);
 updateDisplay();
 ```
 
-### Filtering Activities
+### Filter Activities
 
-```javascript
-// Get all transport activities
+```js
 const transportLogs = filterLogsByCategory(activityLogs, "Transport");
-
-// Get all activities (no filter)
 const allLogs = filterLogsByCategory(activityLogs, "All");
 ```
 
-### Calculating Emissions
+### Calculate Emissions
 
-```javascript
-// Total emissions
+```js
 const total = calculateTotalEmissions(activityLogs);
-
-// Emissions by category
 const breakdown = calculateEmissionsByCategory(activityLogs);
-console.log(breakdown);
-// { "Transport": 5.2, "Food": 3.8, "Energy": 2.1 }
 ```
 
-### Working with the Chart
+### Render Chart
 
-```javascript
-// Render chart with current data
-const chartContainer = document.querySelector(".chart-container");
-const legendContainer = document.getElementById("chart-legend");
+```js
 renderEmissionsChart(activityLogs, chartContainer, legendContainer);
-
-// Access chart instance
-if (chartInstance) {
-  chartInstance.destroy(); // Clean up
-}
 ```
 
 ---
 
 ## 🔄 Event System
 
-### DOM Events
-
 - `click` on `#add-activity-btn` → `handleAddActivity()`
 - `click` on `#clear-all-btn` → `handleClearAll()`
 - `click` on `.delete-btn` → `handleDeleteActivity()`
 - `change` on category filter → filter update
+- `authStateChanged` (CustomEvent) → login/logout UI switch
+
+---
+
+## 🔐 Authentication Flow
+
+- User submits login or registration form (email/username & password)
+- JWT token stored in localStorage
+- All API requests include token (see `api.js`)
+- 401 responses trigger auto-logout and UI reset
+
+---
+
+## 🏆 Leaderboard & Averages
+
+- `getLeaderboard()` fetches ranked user emissions
+- `getAverageEmissions()` fetches average emissions by category
+- Both visualized in dashboard views
+
+---
