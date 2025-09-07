@@ -168,3 +168,38 @@ export const confirmClearAllActivities = async () => {
     },
   }).then((result) => result.isConfirmed);
 };
+
+// Render leaderboard table
+export const renderLeaderboard = (data, container) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    container.innerHTML = `<div class="no-data-message"><i class="fa-solid fa-seedling"></i><p>No leaderboard data available.</p></div>`;
+    return;
+  }
+  let html = `<table class="leaderboard-table">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Full Name</th>
+        <th>Username</th>
+        <th>Total Emissions (kg CO₂)</th>
+        <th>Activity Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${data
+        .map(
+          (row) => `
+            <tr>
+              <td>${row.rank}</td>
+              <td>${row.fullName}</td>
+              <td>@${row.username}</td>
+              <td>${row.totalEmissions.toFixed(2)}</td>
+              <td>${row.activityCount}</td>
+            </tr>
+          `
+        )
+        .join("")}
+    </tbody>
+  </table>`;
+  container.innerHTML = html;
+};

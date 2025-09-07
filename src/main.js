@@ -7,6 +7,7 @@ import {
   deleteActivityLog,
   deleteAllActivityLogs,
   getAverageEmissions,
+  getLeaderboard,
 } from "./logging.js";
 import {
   renderActivityLogs,
@@ -14,6 +15,7 @@ import {
   renderCategoryBreakdown,
   confirmDeleteActivity,
   confirmClearAllActivities,
+  renderLeaderboard,
 } from "./ui";
 import {
   getCategories,
@@ -133,6 +135,11 @@ const setupEventListeners = () => {
   document
     .getElementById("average-btn")
     .addEventListener("click", () => toggleView("average"));
+
+  // Leaderboard view
+  document
+    .getElementById("leaderboard-btn")
+    .addEventListener("click", () => toggleView("leaderboard"));
 };
 
 const handleAddActivity = async () => {
@@ -241,23 +248,37 @@ const toggleView = async (viewType) => {
   });
 
   if (viewType === "dashboard") {
-    // Activate dashboard
     document.getElementById("dashboard-btn").classList.add("active");
     const dashboardView = document.getElementById("dashboard-view");
     dashboardView.classList.add("active");
-    console.log("Dashboard view activated:", dashboardView);
     updateDisplay();
   } else if (viewType === "average") {
-    // Activate average emissions
     document.getElementById("average-btn").classList.add("active");
     const averageView = document.getElementById("average-view");
     averageView.classList.add("active");
-    console.log("Average view activated:", averageView);
-
-    // Force a small delay to ensure the view is rendered before we try to access the canvas
     setTimeout(() => {
       fetchAndDisplayAverageEmissions();
     }, 100);
+  } else if (viewType === "leaderboard") {
+    document.getElementById("leaderboard-btn").classList.add("active");
+    const leaderboardView = document.getElementById("leaderboard-view");
+    leaderboardView.classList.add("active");
+    setTimeout(() => {
+      fetchAndDisplayLeaderboard();
+    }, 100);
+  }
+};
+
+// Fetch and display leaderboard data
+const fetchAndDisplayLeaderboard = async () => {
+  const container = document.getElementById("leaderboard-table-container");
+  container.innerHTML = `<div class="loading-indicator"><i class="fa-solid fa-circle-notch fa-spin"></i><p>Loading leaderboard...</p></div>`;
+  try {
+    const leaderboardData = await getLeaderboard();
+    renderLeaderboard(leaderboardData, container);
+  } catch (error) {
+    console.error("Failed to fetch leaderboard:", error);
+    container.innerHTML = `<div class="no-data-message"><i class="fa-solid fa-triangle-exclamation"></i><p>Failed to load leaderboard data.</p></div>`;
   }
 };
 

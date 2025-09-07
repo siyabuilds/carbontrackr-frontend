@@ -103,6 +103,9 @@
             <button class="view-toggle-btn" id="average-btn">
               <i class="fa-solid fa-chart-pie"></i> Average
             </button>
+            <button class="view-toggle-btn" id="leaderboard-btn">
+              <i class="fa-solid fa-trophy"></i> Leaderboard
+            </button>
           </div>
         </div>
         <div class="header-actions">
@@ -182,6 +185,23 @@
                 ></canvas>
               </div>
               <div class="chart-legend" id="average-chart-legend"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Leaderboard View -->
+        <div class="view-section" id="leaderboard-view">
+          <div class="leaderboard-container">
+            <div class="summary-section">
+              <h2><i class="fa-solid fa-trophy"></i> Leaderboard</h2>
+              <p class="section-description">
+                See how you rank against other users by total emissions.
+              </p>
+            </div>
+            <div id="leaderboard-table-container">
+              <div class="loading-indicator">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <p>Loading leaderboard...</p>
+              </div>
             </div>
           </div>
         </div>
