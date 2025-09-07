@@ -49,3 +49,13 @@ export const getAverageEmissions = async () => {
     throw error;
   }
 };
+
+export const getLeaderboard = async () => {
+  try {
+    const response = await api.get("/api/activities/leaderboard");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    throw error;
+  }
+};
