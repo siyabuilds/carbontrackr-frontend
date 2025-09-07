@@ -1,95 +1,100 @@
-# Carbon Footprint Tracker
+# CarbonTrackr
 
-A modern, responsive web application for tracking and visualizing personal carbon emissions across different daily activities.
+Track, visualize, and reduce your personal carbon footprint with CarbonTrackr—a modern, responsive web app for eco-conscious living.
 
-## 🌱 Overview
+## 🚀 Features
 
-The Carbon Footprint Tracker helps users monitor their environmental impact by logging activities across six key categories: Transport, Food, Energy, Waste, Water, and Shopping. The application provides real-time calculations, visual breakdowns, and persistent data storage to help users understand and reduce their carbon footprint.
+- **Activity Logging:** Log daily activities across six categories: Transport, Food, Energy, Waste, Water, and Shopping.
+- **Real-Time Calculations:** Instantly see your total and category-based CO₂ emissions.
+- **Interactive Charts:** Visualize your impact with dynamic charts powered by Chart.js.
+- **Filtering:** Filter your activity logs by category for focused insights.
+- **Leaderboard:** See how your emissions compare to others.
+- **Authentication:** Secure login and registration with JWT-based sessions.
+- **Persistent Storage:** All data is saved and loaded from a backend API.
+- **Responsive UI:** Works seamlessly on desktop and mobile devices.
+- **Modern UX:** Modal forms, smooth transitions, and a clean, accessible design.
 
-## 📁 Project Structure
+## 🏗️ Project Structure
 
 ```
-carbon-footprint-tracker/
-├── index.html              # Main HTML file
-├── form.js                 # Activity form modal logic
-├── package.json            # Project dependencies
-├── public/                 # Static assets
-│   ├── cropped_circle_image.png
-│   └── vite.svg
-└── src/                    # Source code
-  ├── activity-data.js    # Emissions data for activities
-  ├── calculations.js     # Emission calculation functions
-  ├── chart.js           # Chart rendering and visualization
-  ├── filter.js          # Category filtering logic
-  ├── logging.js          # Handles logging of user activities and communicates with the backend API for data persistence and retrieval.
-  ├── main.js            # Main application entry point
-  ├── style.css          # Application styling
-  └── ui.js              # UI rendering functions
+carbontrackr-frontend/
+├── index.html           # Main HTML file
+├── form.js              # Modal form logic
+├── package.json         # Project dependencies
+├── public/              # Static assets (images, icons)
+└── src/                 # Source code
+    ├── activity-data.js   # Emissions data for activities
+    ├── api.js            # Axios instance and API interceptors
+    ├── auth.js           # Authentication logic
+    ├── authEvents.js     # Auth event listeners
+    ├── calculations.js   # Emission calculation functions
+    ├── chart.js          # Chart rendering
+    ├── filter.js         # Category filtering
+    ├── logging.js        # Activity log CRUD and backend sync
+    ├── main.js           # App entry point and flow
+    ├── style.css         # App styling
+    ├── ui.js             # UI rendering helpers
+    └── utils/            # Utility functions (token, validation)
 ```
 
-## 🛠️ Technical Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: Vanilla JavaScript (ES6 modules)
-- **Build Tool**: Vite
-- **Charting**: Chart.js for data visualization
-- **Modals**: SweetAlert2 for user interactions
-- **Styling**: CSS3 with custom properties
-- **Storage**: Data is persisted via the backend API (see `src/logging.js`)
+- **JavaScript (ES6 modules)**
+- **Vite** (build tool)
+- **Chart.js** (visualization)
+- **SweetAlert2** (modals)
+- **Axios** (API requests)
+- **CSS3** (custom properties, responsive design)
 
-## 📊 Core Modules
+## 📊 How It Works
 
-For all the **Core Modules** and **Functions** breakdown, please refer to [API_DOCS.md](API_DOCS.md)
+1. **Sign Up / Log In:** Authenticate securely to access your dashboard.
+2. **Log Activities:** Add activities via a user-friendly modal form.
+3. **Visualize Impact:** See your total and per-category emissions, plus interactive charts.
+4. **Filter & Analyze:** Filter logs by category, view averages, and compare on the leaderboard.
+5. **Data Sync:** All changes are saved to and loaded from the backend API.
 
-## 🎯 Application Flow
+## � API & Core Modules
 
-1. **Initialization**: Load saved activities from the backend API
-2. **Display**: Render total emissions, category breakdown, and activity list
-3. **User Interaction**: 
-   - Add new activities via modal form
-   - Delete individual activities
-   - Filter activities by category
-   - Clear all data
-4. **Data Updates**: Automatically recalculate and re-render on changes
-5. **Persistence**: Save all changes to the backend API
+See [API_DOCS.md](API_DOCS.md) for detailed module and function documentation.
 
-## 🔧 Development
+## 🖥️ Getting Started
 
-### Setup
 ```bash
 git clone https://github.com/siyabuilds/carbon-footprint-tracker
+cd carbon-footprint-tracker
 npm install
 npm run dev
 ```
 
-## 🎨 Styling Architecture
+## � Data Model Example
 
-- **CSS Custom Properties**: Consistent color scheme and spacing
-- **Flexbox/Grid**: Responsive layout system
-- **Animations**: Smooth transitions and hover effects
-- **Typography**: Quicksand font family for modern appearance
-
-## 📈 Data Model
-
-Each activity log contains:
-```javascript
+```js
 {
-  category: "Transport",     // Activity category
-  activity: "Car (10km)",    // Specific activity
-  co2: 2.4,                 // CO₂ emissions in kg
-  timestamp: "2025-07-03T..."  // ISO timestamp
+  category: "Transport",      // Activity category
+  activity: "Car (10km)",     // Description
+  co2: 2.4,                   // CO₂ emissions in kg
+  timestamp: "2025-07-03T..." // ISO timestamp
 }
 ```
 
-## 🌟 Future Enhancements
+## � Styling
 
-- Convert this to a React app and use SCSS/Tailwind
-- Implement MongoDB Functionality
-- Deploy using Docker/GitHub actions.
+- CSS custom properties for color and spacing
+- Flexbox/Grid for layout
+- Quicksand font for a modern look
+- Smooth transitions and hover effects
+
+## 🌱 Future Plans
+
+- SCSS/Tailwind CSS refactor
+- Redis for caching leaderboard and average emissions data
+- Smart suggestions to help with emissions
 
 ## 🤝 Contributing
 
-This is a project I am doing under @Umuzi-org, but suggestions and improvements are welcome through issues and pull requests.
+This project is developed under [@Umuzi-org](https://github.com/umuzi-org). Suggestions and pull requests are welcome!
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+Open source under the [MIT License](LICENSE).
