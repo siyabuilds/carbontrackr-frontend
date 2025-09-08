@@ -8,6 +8,7 @@ import {
   deleteAllActivityLogs,
   getAverageEmissions,
   getLeaderboard,
+  getCurrentStreak 
 } from "./logging.js";
 import {
   renderActivityLogs,
@@ -140,6 +141,11 @@ const setupEventListeners = () => {
   document
     .getElementById("leaderboard-btn")
     .addEventListener("click", () => toggleView("leaderboard"));
+
+  // Streak view
+  document
+    .getElementById("streak-btn")
+    .addEventListener("click", () => toggleView("streak"));
 };
 
 const handleAddActivity = async () => {
@@ -266,7 +272,56 @@ const toggleView = async (viewType) => {
     setTimeout(() => {
       fetchAndDisplayLeaderboard();
     }, 100);
+  } else if (viewType === "streak") {
+    document.getElementById("streak-btn").classList.add("active");
+    const streakView = document.getElementById("streak-view");
+    streakView.classList.add("active");
+    setTimeout(() => {
+      fetchAndDisplayStreak();
+    }, 100);
   }
+};
+
+
+// Fetch and display streak data
+const fetchAndDisplayStreak = async () => {
+  const streakContent = document.querySelector("#streak-view .streak-content");
+  if (!streakContent) return;
+  streakContent.innerHTML = `<div class='loading-indicator'><i class='fa-solid fa-circle-notch fa-spin'></i><p>Loading streak...</p></div>`;
+  try {
+    const data = await getCurrentStreak();
+    renderStreak(data, streakContent);
+  } catch (error) {
+    streakContent.innerHTML = `<div class='no-data-message'><i class='fa-solid fa-triangle-exclamation'></i><p>Failed to load streak data.</p></div>`;
+  }
+};
+
+// Render streak row
+const renderStreak = (data, container) => {
+  if (!data || !Array.isArray(data.streak)) {
+    container.innerHTML = `<div class='no-data-message'><i class='fa-solid fa-triangle-exclamation'></i><p>No streak data available.</p></div>`;
+    return;
+  }
+  const daysRow = data.streak
+    .map(
+      (day) => `
+        <div class="streak-day${day.active ? ' active' : ''}" title="${day.date}">
+          <span class="streak-day-date">${day.date.slice(5)}</span>
+          <span class="streak-day-icon">
+            <i class="fa-solid ${day.active ? 'fa-check' : 'fa-xmark'}"></i>
+          </span>
+        </div>
+      `
+    )
+    .join("");
+  container.innerHTML = `
+    <div class="streak-row">
+      ${daysRow}
+    </div>
+    <div class="streak-current">
+      <span>Current Streak: <strong>${data.currentStreak}</strong> days</span>
+    </div>
+  `;
 };
 
 // Fetch and display leaderboard data
