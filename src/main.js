@@ -30,6 +30,7 @@ import {
   setupLogoutEventListener,
 } from "./authEvents.js";
 import { isTokenValid } from "./utils/validateToke.js";
+import { saveLastView, getLastView, clearLastView } from "./utils/lastView.js";
 import Swal from "sweetalert2";
 
 let activityLogs = [];
@@ -58,6 +59,7 @@ const initializeApp = async () => {
         text: "Your session has expired. Please log in again.",
       }).then(() => {
         localStorage.removeItem("token");
+        clearLastView(); // Clear last view on session expiry
         showAuthUI();
       });
     }
@@ -92,8 +94,11 @@ const showMainApp = () => {
   // load activity logs from backend and update UI
   fetchAndUpdateLogs();
 
-  // Initialize dashboard view as active
-  toggleView("dashboard");
+  // Get the last view from localStorage, fallback to dashboard
+  const lastView = getLastView();
+
+  // Initialize with the last viewed section
+  toggleView(lastView);
 };
 
 const fetchAndUpdateLogs = async () => {
@@ -258,6 +263,11 @@ const toggleMobileMenu = () => {
 // Toggle between dashboard and average emissions views
 const toggleView = async (viewType) => {
   console.log(`Switching to view: ${viewType}`);
+
+  // Save the current view to localStorage for authenticated users
+  if (isCurrentUserLoggedIn()) {
+    saveLastView(viewType);
+  }
 
   // Close mobile menu when a view is selected
   const hamburgerMenu = document.getElementById("hamburger-menu");

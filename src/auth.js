@@ -1,6 +1,6 @@
 import api from "./api.js";
 import { getToken } from "./utils/getToken";
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { clearLastView } from "./utils/lastView.js";
 
 export const register = async (email, username, password, fullName) => {
   try {
@@ -34,6 +34,7 @@ export const login = async (identifier, password) => {
 
 export const logout = () => {
   localStorage.removeItem("token");
+  clearLastView();
 };
 
 export const isCurrentUserLoggedIn = () => {
