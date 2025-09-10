@@ -1,5 +1,11 @@
 const LAST_VIEW_KEY = "carbontrackr_last_view";
-const VALID_VIEWS = ["dashboard", "average", "leaderboard", "streak"];
+const VALID_VIEWS = [
+  "dashboard",
+  "average",
+  "leaderboard",
+  "streak",
+  "summaries",
+];
 const DEFAULT_VIEW = "dashboard";
 
 // Save the last viewed section to localStorage

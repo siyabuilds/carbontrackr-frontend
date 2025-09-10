@@ -156,6 +156,11 @@ const setupEventListeners = () => {
   document
     .getElementById("streak-btn")
     .addEventListener("click", () => toggleView("streak"));
+
+  // Summaries view
+  document
+    .getElementById("summaries-btn")
+    .addEventListener("click", () => toggleView("summaries"));
 };
 
 const handleAddActivity = async () => {
@@ -316,6 +321,11 @@ const toggleView = async (viewType) => {
     setTimeout(() => {
       fetchAndDisplayStreak();
     }, 100);
+  } else if (viewType === "summaries") {
+    document.getElementById("summaries-btn").classList.add("active");
+    const summariesView = document.getElementById("summaries-view");
+    summariesView.classList.add("active");
+    // No need to fetch data for now since it's just static content
   }
 };
 
