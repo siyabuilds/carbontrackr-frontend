@@ -302,10 +302,11 @@ const renderStreak = (data, container) => {
     container.innerHTML = `<div class='no-data-message'><i class='fa-solid fa-triangle-exclamation'></i><p>No streak data available.</p></div>`;
     return;
   }
-  const daysRow = data.streak
+  const days = Array.isArray(data.streak) ? data.streak.slice(-7) : [];
+  const daysRow = days
     .map(
       (day) => `
-        <div class="streak-day${day.active ? ' active' : ''}" title="${day.date}">
+  <div class="streak-day${day.active ? ' active' : ' inactive'}" title="${day.date}">
           <span class="streak-day-date">${day.date.slice(5)}</span>
           <span class="streak-day-icon">
             <i class="fa-solid ${day.active ? 'fa-check' : 'fa-xmark'}"></i>

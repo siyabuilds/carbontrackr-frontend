@@ -1195,7 +1195,9 @@ body.show-main #main-app-container {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin: 2rem 0 1rem 0;
+  flex-wrap: wrap;
+  max-width: 720px;
+  margin: 2rem auto 1rem auto;
 }
 .streak-day {
   display: flex;
@@ -1227,7 +1229,6 @@ body.show-main #main-app-container {
 .streak-day:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.10);
   border-color: #888;
-  background: #f5f5f5;
 }
 .streak-day-date {
   font-size: 0.95em;
@@ -1242,4 +1243,21 @@ body.show-main #main-app-container {
   font-size: 1.1em;
   margin-top: 1rem;
   color: #222;
+}
+
+/* Mobile layout: 4 days on first row, 3 days on second row */
+@media (max-width: 600px) {
+  .streak-row {
+    gap: 0.75rem;
+  }
+  .streak-day {
+    min-width: calc((100% - 3 * 0.75rem) / 4); /* 4 items per first row */
+    flex: 1 0 calc((100% - 3 * 0.75rem) / 4);
+    padding: 0.6rem 0.5rem;
+    font-size: 0.95rem;
+  }
+  /* Ensure only 7 items visible per block naturally create 4/3 wrap.
+     If more than 7 days are rendered, they will continue wrapping. */
+  .streak-day:nth-child(-n+4) { order: 1; }
+  .streak-day:nth-child(n+5):nth-child(-n+7) { order: 2; }
 }
