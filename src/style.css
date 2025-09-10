@@ -176,31 +176,122 @@ body.show-main #main-app-container {
   transition: transform 0.2s ease;
 }
 
+/* Hamburger Menu Styles */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 2rem;
+  height: 2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.hamburger-menu span {
+  width: 2rem;
+  height: 0.25rem;
+  background: #2e7d32;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  position: relative;
+  transform-origin: 1px;
+}
+
+.hamburger-menu.open span:first-child {
+  transform: rotate(45deg);
+}
+
+.hamburger-menu.open span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.hamburger-menu.open span:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
 @media (max-width: 768px) {
   .app-header {
     flex-wrap: wrap;
     gap: 1rem;
+    position: relative;
+  }
+
+  .hamburger-menu {
+    display: flex;
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
   }
 
   .header-content {
     flex: 1 0 100%;
     order: 1;
+    padding-right: 3rem;
   }
 
   .header-nav {
-    flex: 1 0 auto;
-    order: 3;
+    flex: 1 0 100%;
+    order: 4;
     margin: 0.5rem 0;
     width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 0;
+  }
+
+  .header-nav.open {
+    max-height: 300px;
+    padding: 1rem 0;
   }
 
   .header-actions {
     flex: 1 0 auto;
     order: 2;
-    justify-content: flex-end;
+    justify-content: space-between;
     width: 100%;
     display: flex;
     gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* Keep Add Activity button visible, hide logout in collapsed menu */
+  #add-activity-btn {
+    order: 1;
+  }
+
+  #logout-btn {
+    order: 2;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0;
+    transition: all 0.3s ease;
+  }
+
+  .header-actions.open #logout-btn {
+    max-height: 50px;
+    opacity: 1;
+    padding: 0.5rem 1rem;
+  }
+
+  .view-toggle {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .view-toggle-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
   }
 }
 
@@ -209,24 +300,28 @@ body.show-main #main-app-container {
     padding: 1rem;
   }
 
-  .view-toggle-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
+  .hamburger-menu {
+    top: 1rem;
+    right: 1rem;
   }
 
-  #add-activity-btn,
-  #logout-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
-
-  .view-toggle {
-    width: 100%;
+  .header-content {
+    padding-right: 3rem;
   }
 
   .view-toggle-btn {
-    flex: 1;
-    justify-content: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  #add-activity-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .header-actions.open #logout-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -1210,7 +1305,7 @@ body.show-main #main-app-container {
   transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
   cursor: pointer;
   font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .streak-day.active {
   background: #e6fbe6;
@@ -1227,7 +1322,7 @@ body.show-main #main-app-container {
   color: #e74c3c;
 }
 .streak-day:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-color: #888;
 }
 .streak-day-date {
@@ -1258,6 +1353,10 @@ body.show-main #main-app-container {
   }
   /* Ensure only 7 items visible per block naturally create 4/3 wrap.
      If more than 7 days are rendered, they will continue wrapping. */
-  .streak-day:nth-child(-n+4) { order: 1; }
-  .streak-day:nth-child(n+5):nth-child(-n+7) { order: 2; }
+  .streak-day:nth-child(-n + 4) {
+    order: 1;
+  }
+  .streak-day:nth-child(n + 5):nth-child(-n + 7) {
+    order: 2;
+  }
 }

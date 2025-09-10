@@ -8,7 +8,7 @@ import {
   deleteAllActivityLogs,
   getAverageEmissions,
   getLeaderboard,
-  getCurrentStreak 
+  getCurrentStreak,
 } from "./logging.js";
 import {
   renderActivityLogs,
@@ -122,6 +122,11 @@ const setupEventListeners = () => {
   document
     .getElementById("activity-logs")
     .addEventListener("click", handleDeleteActivity);
+
+  // Hamburger menu toggle
+  document
+    .getElementById("hamburger-menu")
+    .addEventListener("click", toggleMobileMenu);
 
   /**
    * View toggle buttons
@@ -239,9 +244,31 @@ const setupFilterComponent = () => {
   activitiesHeading.insertAdjacentElement("afterend", filterComponent);
 };
 
+// Toggle mobile hamburger menu
+const toggleMobileMenu = () => {
+  const hamburgerMenu = document.getElementById("hamburger-menu");
+  const headerNav = document.querySelector(".header-nav");
+  const headerActions = document.querySelector(".header-actions");
+
+  hamburgerMenu.classList.toggle("open");
+  headerNav.classList.toggle("open");
+  headerActions.classList.toggle("open");
+};
+
 // Toggle between dashboard and average emissions views
 const toggleView = async (viewType) => {
   console.log(`Switching to view: ${viewType}`);
+
+  // Close mobile menu when a view is selected
+  const hamburgerMenu = document.getElementById("hamburger-menu");
+  const headerNav = document.querySelector(".header-nav");
+  const headerActions = document.querySelector(".header-actions");
+
+  if (hamburgerMenu.classList.contains("open")) {
+    hamburgerMenu.classList.remove("open");
+    headerNav.classList.remove("open");
+    headerActions.classList.remove("open");
+  }
 
   // Hide all view sections first
   document.querySelectorAll(".view-section").forEach((section) => {
@@ -282,7 +309,6 @@ const toggleView = async (viewType) => {
   }
 };
 
-
 // Fetch and display streak data
 const fetchAndDisplayStreak = async () => {
   const streakContent = document.querySelector("#streak-view .streak-content");
@@ -306,10 +332,12 @@ const renderStreak = (data, container) => {
   const daysRow = days
     .map(
       (day) => `
-  <div class="streak-day${day.active ? ' active' : ' inactive'}" title="${day.date}">
+  <div class="streak-day${day.active ? " active" : " inactive"}" title="${
+        day.date
+      }">
           <span class="streak-day-date">${day.date.slice(5)}</span>
           <span class="streak-day-icon">
-            <i class="fa-solid ${day.active ? 'fa-check' : 'fa-xmark'}"></i>
+            <i class="fa-solid ${day.active ? "fa-check" : "fa-xmark"}"></i>
           </span>
         </div>
       `
