@@ -5,7 +5,7 @@ import {
 import Chart from "chart.js/auto";
 
 const CATEGORY_COLORS = {
-  Transport: "#2196f3",
+  Transport: "#ff5722",
   Food: "#ff9800",
   Energy: "#9c27b0",
   Waste: "#795548",
@@ -211,7 +211,7 @@ export const renderAverageEmissionsChart = (
       {
         data: categories.map((category) => categoryAverages[category]),
         backgroundColor: categories.map(
-          (category) => CATEGORY_COLORS[category] || "#999999" 
+          (category) => CATEGORY_COLORS[category] || "#999999"
         ),
         borderColor: "#ffffff",
         borderWidth: 2,
