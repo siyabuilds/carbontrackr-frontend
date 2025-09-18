@@ -1,8 +1,17 @@
 import api from "./api.js";
+import { socketManager } from "./socket.js";
+import { getCurrentUserId } from "./utils/decodeToken.js";
 
 export const addActivityLog = async (log) => {
   try {
     const response = await api.post("/api/activities", log);
+
+    // Emit socket event for real-time tip display
+    const userId = getCurrentUserId();
+    if (userId && socketManager.isConnected) {
+      socketManager.logActivity(userId, log.category, log.activity);
+    }
+
     return response.data;
   } catch (error) {
     console.error("Error adding activity log:", error);
