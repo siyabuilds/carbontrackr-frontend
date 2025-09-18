@@ -20,6 +20,7 @@ import {
   renderLeaderboard,
   renderCurrentSummary,
   renderSummaryError,
+  displayActivityTip,
 } from "./ui";
 import {
   getCategories,
@@ -34,10 +35,28 @@ import {
 } from "./authEvents.js";
 import { isTokenValid } from "./utils/validateToke.js";
 import { saveLastView, getLastView, clearLastView } from "./utils/lastView.js";
+import { socketManager } from "./socket.js";
+import { getCurrentUserId } from "./utils/decodeToken.js";
 import Swal from "sweetalert2";
 
 let activityLogs = [];
 let selectedCategory = "All";
+
+const initializeSocket = () => {
+  socketManager.connect();
+  socketManager.setTipCallback(displayActivityTip);
+  const userId = getCurrentUserId();
+  if (userId) {
+    socketManager.registerUser(userId);
+  }
+};
+
+const handleLogout = () => {
+  // Disconnect socket before logging out
+  socketManager.disconnect();
+  logout();
+  clearLastView(); // Clear last view on logout
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
@@ -61,8 +80,7 @@ const initializeApp = async () => {
         title: "Session Expired",
         text: "Your session has expired. Please log in again.",
       }).then(() => {
-        localStorage.removeItem("token");
-        clearLastView(); // Clear last view on session expiry
+        handleLogout();
         showAuthUI();
       });
     }
@@ -86,6 +104,10 @@ const showAuthUI = () => {
 
 const showMainApp = () => {
   document.body.className = "show-main";
+
+  // Initialize WebSocket connection
+  initializeSocket();
+
   setupEventListeners();
   setupFilterComponent();
 
