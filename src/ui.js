@@ -5,6 +5,61 @@ import {
 } from "./calculations.js";
 import Swal from "sweetalert2";
 
+export const displayActivityTip = (tipData) => {
+  const { emissionLevel, tipType, message, allTips, category, activity } =
+    tipData;
+
+  // Determine SWAL type based on emission level
+  const isPositive = emissionLevel === "low";
+  const swalType = isPositive ? "success" : "info";
+  const title = isPositive ? "Great Choice! 🌱" : "Eco-Friendly Tip 💡";
+
+  // Create the main message
+  let htmlContent = `
+    <div style="text-align: left;">
+      <p><strong>Activity:</strong> ${category} - ${activity}</p>
+      <p><strong>Tip:</strong> ${message}</p>
+  `;
+
+  // If there are multiple tips (improvement case), show them
+  if (Array.isArray(allTips) && allTips.length > 1) {
+    htmlContent += `
+      <details style="margin-top: 15px;">
+        <summary style="cursor: pointer; font-weight: bold; color: #3085d6;">
+          View All Tips
+        </summary>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          ${allTips
+            .map((tip) => `<li style="margin: 5px 0;">${tip}</li>`)
+            .join("")}
+        </ul>
+      </details>
+    `;
+  }
+
+  htmlContent += "</div>";
+
+  Swal.fire({
+    title: title,
+    html: htmlContent,
+    icon: swalType,
+    confirmButtonText: "Got it!",
+    confirmButtonColor: isPositive ? "#28a745" : "#3085d6",
+    timer: isPositive ? 6000 : 8000,
+    timerProgressBar: true,
+    showClass: {
+      popup: "animate__animated animate__fadeInDown",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp",
+    },
+    customClass: {
+      container: "tip-alert-container",
+      popup: "tip-alert-popup",
+    },
+  });
+};
+
 export const createActivityLogElement = (log, index) => {
   const logItem = document.createElement("div");
   logItem.className = "activity-log-item";
