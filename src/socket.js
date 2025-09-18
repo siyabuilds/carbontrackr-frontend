@@ -5,6 +5,8 @@ class SocketManager {
     this.socket = null;
     this.isConnected = false;
     this.onTipReceived = null; // Callback for tip display
+    this.pendingUserId = null; // Store userId to register user after connection
+    this.registeredUserId = null; // Keep track of registered user for reconnections
   }
 
   setTipCallback(callback) {
@@ -25,11 +27,19 @@ class SocketManager {
     this.socket.on("connect", () => {
       console.log("Connected to server:", this.socket.id);
       this.isConnected = true;
+      const userIdToRegister = this.pendingUserId || this.registeredUserId;
+      if (userIdToRegister) {
+        this.socket.emit("register-user", userIdToRegister);
+        console.log(`Registered user: ${userIdToRegister}`);
+        this.registeredUserId = userIdToRegister;
+        this.pendingUserId = null; // Clear pending registration
+      }
     });
 
     this.socket.on("disconnect", (reason) => {
       console.log("Disconnected from server:", reason);
       this.isConnected = false;
+      this.pendingUserId = null; // Clear any pending registration
     });
 
     this.socket.on("connect_error", (error) => {
@@ -51,8 +61,13 @@ class SocketManager {
     if (this.socket && this.isConnected) {
       this.socket.emit("register-user", userId);
       console.log(`Registered user: ${userId}`);
+      this.registeredUserId = userId;
+    } else if (this.socket) {
+      // Store userId to register once connected
+      this.pendingUserId = userId;
+      console.log(`User registration pending connection: ${userId}`);
     } else {
-      console.error("Socket not connected. Cannot register user.");
+      console.error("Socket not initialized. Cannot register user.");
     }
   }
 
@@ -75,6 +90,8 @@ class SocketManager {
     if (this.socket) {
       this.socket.disconnect();
       this.isConnected = false;
+      this.pendingUserId = null;
+      this.registeredUserId = null;
       console.log("Socket disconnected");
     }
   }
