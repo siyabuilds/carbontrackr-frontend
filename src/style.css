@@ -1633,3 +1633,94 @@ body.show-main #main-app-container {
     gap: 1rem;
   }
 }
+
+/* WebSocket Tip Alert Styles */
+.tip-alert-container {
+  z-index: 10000;
+}
+
+.tip-alert-popup {
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.tip-alert-popup .swal2-title {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+.tip-alert-popup .swal2-html-container {
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  text-align: left !important;
+}
+
+.tip-alert-popup details {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.tip-alert-popup details summary {
+  outline: none;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.tip-alert-popup details summary:hover {
+  color: #2563eb;
+}
+
+.tip-alert-popup details[open] summary {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.tip-alert-popup ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.tip-alert-popup li {
+  margin: 5px 0;
+  line-height: 1.4;
+}
+
+/* Animation classes for SweetAlert2 */
+.animate__animated {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+}
+
+.animate__fadeInDown {
+  animation-name: fadeInDown;
+}
+
+.animate__fadeOutUp {
+  animation-name: fadeOutUp;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+}
