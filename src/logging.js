@@ -69,3 +69,23 @@ export const getCurrentStreak = async () => {
     throw error;
   }
 };
+
+export const getCurrentSummary = async () => {
+  try {
+    const response = await api.get("/api/summaries/current");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current summary:", error);
+    throw error;
+  }
+};
+
+export const getWeeklySummary = async (weekStart) => {
+  try {
+    const response = await api.get(`/api/summaries/${weekStart}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching weekly summary:", error);
+    throw error;
+  }
+};
