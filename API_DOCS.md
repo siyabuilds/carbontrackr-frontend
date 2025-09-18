@@ -12,12 +12,13 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 - **api.js**: Axios instance, request/response interceptors, auth token handling
 - **auth.js**: User authentication (register, login, logout, session check)
 - **authEvents.js**: Auth form validation, event listeners, and state management
-- **logging.js**: CRUD for activity logs, leaderboard, and averages (API sync)
-- **ui.js**: UI rendering for logs, totals, breakdowns, and leaderboard
+- **logging.js**: CRUD for activity logs, leaderboard, averages, streaks, and summaries (API sync)
+- **ui.js**: UI rendering for logs, totals, breakdowns, leaderboard, and tips
 - **chart.js**: Chart.js integration for emissions and averages
 - **filter.js**: Category filtering utilities and UI
 - **form.js**: Modal activity form (SweetAlert2)
-- **utils/**: Token management and validation
+- **socket.js**: WebSocket management for real-time features and activity tips
+- **utils/**: Token management, validation, view persistence, and user ID extraction
 
 ---
 
@@ -37,6 +38,35 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 - `POST   /api/register` → Register a new user
 - `POST   /api/login` → Login (returns JWT token)
 - `GET    /api/validate` → Validate JWT token
+
+### Streak Endpoints
+
+- `GET    /api/streaks` → Get 7-day activity streak for authenticated user
+
+### Summary Endpoints
+
+- `GET    /api/summaries/current` → Get current week summary for authenticated user
+- `GET    /api/summaries/:weekStart` → Get summary for specific week (ISO date format)
+
+---
+
+## 🔌 WebSocket Events (via socket.js)
+
+### Real-time Communication
+
+The app includes WebSocket support for real-time features like activity tips and notifications.
+
+### Client Events (Emit)
+
+- `register-user` → Register user ID for personalized events
+- `activity-logged` → Notify server of new activity for tip generation
+
+### Server Events (Listen)
+
+- `tip-response` → Receive personalized tips after logging activities
+- `connect` → Socket connection established
+- `disconnect` → Socket connection lost
+- `connect_error` → Socket connection failed
 
 ---
 
@@ -88,6 +118,9 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 - `deleteAllActivityLogs()` — Delete all (DELETE)
 - `getAverageEmissions()` — Get average emissions (GET)
 - `getLeaderboard()` — Get leaderboard (GET)
+- `getCurrentStreak()` — Get 7-day activity streak (GET)
+- `getCurrentSummary()` — Get current week summary (GET)
+- `getWeeklySummary(weekStart)` — Get summary for specific week (GET)
 
 ### ui.js
 
@@ -117,10 +150,24 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 
 - `showActivityForm(activityData)` — Modal form (SweetAlert2)
 
+### socket.js
+
+- `socketManager` — Singleton WebSocket manager with methods:
+  - `connect()` — Establish WebSocket connection
+  - `registerUser(userId)` — Register user for personalized events
+  - `logActivity(userId, category, activity)` — Emit activity for tip generation
+  - `setTipCallback(callback)` — Set callback for tip responses
+  - `disconnect()` — Close WebSocket connection
+
 ### utils/
 
 - `getToken()` — Get JWT from localStorage
 - `isTokenValid()` — Validate token with backend
+- `decodeToken()` — Decode JWT to get payload
+- `getCurrentUserId()` — Extract user ID from JWT token
+- `saveLastView(viewType)` — Save last viewed section to localStorage
+- `getLastView()` — Get last viewed section from localStorage
+- `clearLastView()` — Clear last view from localStorage
 
 ---
 
@@ -149,6 +196,42 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 
 ```js
 number; // CO₂ in kg per activity unit
+```
+
+### StreakData
+
+```js
+{
+  streak: Array<{ date: string, active: boolean }>, // 7-day streak array
+  currentStreak: number // Current consecutive streak count
+}
+```
+
+### SummaryData
+
+```js
+{
+  summary: {
+    _id: string,
+    userId: string,
+    weekStart: string, // ISO date
+    totalEmissions: number,
+    categoryBreakdown: { [category: string]: number },
+    activityCount: number,
+    createdAt: string,
+    updatedAt: string
+  }
+}
+```
+
+### TipData
+
+```js
+{
+  tip: string,
+  category: string,
+  userId: string
+}
 ```
 
 ---
