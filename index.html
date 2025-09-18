@@ -239,49 +239,110 @@
         <div class="view-section" id="summaries-view">
           <div class="summaries-container">
             <div class="summary-section">
-              <h2><i class="fa-solid fa-chart-simple"></i> Summaries</h2>
+              <h2><i class="fa-solid fa-chart-simple"></i> Weekly Summary</h2>
               <p class="section-description">
                 Detailed insights and analysis of your carbon footprint data.
               </p>
             </div>
             <div class="summaries-content">
-              <div class="coming-soon-container">
-                <div class="coming-soon-icon">
-                  <i class="fa-solid fa-wrench fa-3x"></i>
+              <div class="loading-indicator">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <p>Loading summary...</p>
+              </div>
+
+              <!-- Summary Cards Grid -->
+              <div class="summary-cards-grid" style="display: none">
+                <div class="summary-card">
+                  <h3>
+                    <i class="fa-solid fa-chart-line"></i> Total Emissions
+                  </h3>
+                  <div class="metric-value" id="summary-total-emissions">
+                    0.00 kg
+                  </div>
+                  <div class="metric-label">CO₂ Equivalent</div>
                 </div>
-                <h3>Coming Soon!</h3>
-                <p>
-                  Feature under development. It will provide in-depth summaries
-                  and insights about your carbon footprint emissions and tips
-                  for reduction.
-                </p>
-                <div class="features-preview">
-                  <h4>What to expect:</h4>
-                  <ul>
-                    <li>
-                      <i class="fa-solid fa-chart-line"></i> Weekly and monthly
-                      emission trends
-                    </li>
-                    <li>
-                      <i class="fa-solid fa-calendar-alt"></i> Custom date range
-                      analysis
-                    </li>
-                    <li>
-                      <i class="fa-solid fa-lightbulb"></i> Personalized
-                      reduction suggestions
-                    </li>
-                    <li>
-                      <i class="fa-solid fa-medal"></i> Achievement badges and
-                      milestones
-                    </li>
-                    <li>
-                        <i class="fa-solid fa-share-nodes"></i> Share achievements with friends
-                    </li>
-                  </ul>
+
+                <div class="summary-card">
+                  <h3><i class="fa-solid fa-list"></i> Activities Logged</h3>
+                  <div class="metric-value" id="summary-activities-count">
+                    0
+                  </div>
+                  <div class="metric-label">This Week</div>
                 </div>
-                <p class="stay-tuned">
-                  Stay tuned for these exciting features!
+
+                <div class="summary-card">
+                  <h3><i class="fa-solid fa-calendar-week"></i> Week Period</h3>
+                  <div class="metric-value" id="summary-week-period">-</div>
+                  <div class="metric-label">Date Range</div>
+                </div>
+              </div>
+
+              <!-- Category Analysis Section -->
+              <div class="category-analysis-section" style="display: none">
+                <div class="category-card highest" id="highest-category-card">
+                  <h3>
+                    <i class="fa-solid fa-arrow-trend-up"></i> Highest Emissions
+                  </h3>
+                  <div class="category-name" id="highest-category-name">-</div>
+                  <div class="category-metrics">
+                    <div class="category-metric">
+                      <span class="value" id="highest-category-emissions"
+                        >0.00</span
+                      >
+                      <span class="label">kg CO₂</span>
+                    </div>
+                    <div class="category-metric">
+                      <span class="value" id="highest-category-count">0</span>
+                      <span class="label">Activities</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="category-card lowest" id="lowest-category-card">
+                  <h3>
+                    <i class="fa-solid fa-arrow-trend-down"></i> Lowest
+                    Emissions
+                  </h3>
+                  <div class="category-name" id="lowest-category-name">-</div>
+                  <div class="category-metrics">
+                    <div class="category-metric">
+                      <span class="value" id="lowest-category-emissions"
+                        >0.00</span
+                      >
+                      <span class="label">kg CO₂</span>
+                    </div>
+                    <div class="category-metric">
+                      <span class="value" id="lowest-category-count">0</span>
+                      <span class="label">Activities</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Personalized Tip Section -->
+              <div
+                class="tip-card"
+                id="personalized-tip-card"
+                style="display: none"
+              >
+                <div class="tip-category" id="tip-category">Category</div>
+                <h3 id="tip-title">
+                  <i class="fa-solid fa-lightbulb"></i> Personalized Tip
+                </h3>
+                <p class="tip-message" id="tip-message">
+                  Your personalized tip will appear here.
                 </p>
+              </div>
+
+              <!-- No Data Message -->
+              <div
+                class="no-data-message"
+                id="no-summary-data"
+                style="display: none"
+              >
+                <i class="fa-solid fa-chart-simple"></i>
+                <p>No summary data available for this week.</p>
+                <p>Start logging activities to see your weekly insights!</p>
               </div>
             </div>
           </div>

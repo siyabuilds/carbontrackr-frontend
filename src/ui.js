@@ -203,3 +203,164 @@ export const renderLeaderboard = (data, container) => {
   </table>`;
   container.innerHTML = html;
 };
+
+// Summary rendering functions
+export const renderCurrentSummary = (summaryData, container) => {
+  const loadingIndicator = container.querySelector(".loading-indicator");
+  const summaryCards = container.querySelector(".summary-cards-grid");
+  const categorySection = container.querySelector(".category-analysis-section");
+  const tipCard = container.querySelector(".tip-card");
+  const noDataMessage = container.querySelector(".no-data-message");
+
+  // Hide loading indicator
+  if (loadingIndicator) {
+    loadingIndicator.style.display = "none";
+  }
+
+  if (!summaryData || !summaryData.summary) {
+    // Show no data message
+    if (noDataMessage) {
+      noDataMessage.style.display = "block";
+    }
+    return;
+  }
+
+  const summary = summaryData.summary;
+
+  // Render basic summary cards
+  renderSummaryCards(summary, summaryCards);
+
+  // Render category analysis
+  renderCategoryAnalysis(summary, categorySection);
+
+  // Render personalized tip
+  renderPersonalizedTip(summary, tipCard);
+};
+
+const renderSummaryCards = (summary, container) => {
+  if (!container) return;
+
+  // Update total emissions
+  const totalEmissionsEl = document.getElementById("summary-total-emissions");
+  if (totalEmissionsEl) {
+    totalEmissionsEl.textContent = `${summary.totalValue.toFixed(2)} kg`;
+  }
+
+  // Update activities count
+  const activitiesCountEl = document.getElementById("summary-activities-count");
+  if (activitiesCountEl) {
+    activitiesCountEl.textContent = summary.activitiesCount.toString();
+  }
+
+  // Update week period
+  const weekPeriodEl = document.getElementById("summary-week-period");
+  if (weekPeriodEl) {
+    const startDate = new Date(summary.weekStart).toLocaleDateString();
+    const endDate = new Date(summary.weekEnd).toLocaleDateString();
+    weekPeriodEl.textContent = `${startDate} - ${endDate}`;
+    weekPeriodEl.style.fontSize = "1.2rem";
+  }
+
+  container.style.display = "grid";
+};
+
+const renderCategoryAnalysis = (summary, container) => {
+  if (!container) return;
+
+  const highestCard = document.getElementById("highest-category-card");
+  const lowestCard = document.getElementById("lowest-category-card");
+
+  // Render highest emission category
+  if (summary.highestEmissionCategory && highestCard) {
+    const highest = summary.highestEmissionCategory;
+
+    document.getElementById("highest-category-name").textContent =
+      highest.category;
+    document.getElementById("highest-category-emissions").textContent =
+      highest.emissions.toFixed(2);
+    document.getElementById("highest-category-count").textContent =
+      highest.activityCount.toString();
+
+    highestCard.style.display = "block";
+  }
+
+  // Render lowest emission category
+  if (summary.lowestEmissionCategory && lowestCard) {
+    const lowest = summary.lowestEmissionCategory;
+
+    document.getElementById("lowest-category-name").textContent =
+      lowest.category;
+    document.getElementById("lowest-category-emissions").textContent =
+      lowest.emissions.toFixed(2);
+    document.getElementById("lowest-category-count").textContent =
+      lowest.activityCount.toString();
+
+    lowestCard.style.display = "block";
+  }
+
+  // Show the category analysis section if we have data
+  if (summary.highestEmissionCategory || summary.lowestEmissionCategory) {
+    container.style.display = "grid";
+  }
+};
+
+const renderPersonalizedTip = (summary, container) => {
+  if (!container || !summary.personalizedTip) return;
+
+  const tip = summary.personalizedTip;
+
+  // Update tip category badge
+  const tipCategoryEl = document.getElementById("tip-category");
+  if (tipCategoryEl) {
+    tipCategoryEl.textContent = tip.category;
+  }
+
+  // Update tip title with appropriate icon
+  const tipTitleEl = document.getElementById("tip-title");
+  if (tipTitleEl) {
+    const icon =
+      tip.tipType === "positive"
+        ? '<i class="fa-solid fa-thumbs-up"></i>'
+        : '<i class="fa-solid fa-lightbulb"></i>';
+    const title = tip.tipType === "positive" ? "Great Job!" : "Improvement Tip";
+    tipTitleEl.innerHTML = `${icon} ${title}`;
+  }
+
+  // Update tip message
+  const tipMessageEl = document.getElementById("tip-message");
+  if (tipMessageEl) {
+    tipMessageEl.textContent = tip.message;
+  }
+
+  // Apply appropriate styling based on tip type
+  if (tip.tipType === "improvement") {
+    container.classList.add("improvement");
+  } else {
+    container.classList.remove("improvement");
+  }
+
+  container.style.display = "block";
+};
+
+export const renderSummaryError = (
+  container,
+  errorMessage = "Failed to load summary data"
+) => {
+  const loadingIndicator = container.querySelector(".loading-indicator");
+  const noDataMessage = container.querySelector(".no-data-message");
+
+  // Hide loading indicator
+  if (loadingIndicator) {
+    loadingIndicator.style.display = "none";
+  }
+
+  // Show error message
+  if (noDataMessage) {
+    noDataMessage.innerHTML = `
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>${errorMessage}</p>
+      <p>Please try again later or contact support if the problem persists.</p>
+    `;
+    noDataMessage.style.display = "block";
+  }
+};

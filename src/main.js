@@ -9,6 +9,7 @@ import {
   getAverageEmissions,
   getLeaderboard,
   getCurrentStreak,
+  getCurrentSummary,
 } from "./logging.js";
 import {
   renderActivityLogs,
@@ -17,6 +18,8 @@ import {
   confirmDeleteActivity,
   confirmClearAllActivities,
   renderLeaderboard,
+  renderCurrentSummary,
+  renderSummaryError,
 } from "./ui";
 import {
   getCategories,
@@ -325,7 +328,9 @@ const toggleView = async (viewType) => {
     document.getElementById("summaries-btn").classList.add("active");
     const summariesView = document.getElementById("summaries-view");
     summariesView.classList.add("active");
-    // No need to fetch data for now since it's just static content
+    setTimeout(() => {
+      fetchAndDisplaySummary();
+    }, 100);
   }
 };
 
@@ -414,5 +419,37 @@ const fetchAndDisplayAverageEmissions = async () => {
         <p>Failed to load average emissions data.</p>
       </div>
     `;
+  }
+};
+
+// Fetch and display summary data
+const fetchAndDisplaySummary = async () => {
+  const summariesContent = document.querySelector(
+    "#summaries-view .summaries-content"
+  );
+  if (!summariesContent) return;
+
+  // Reset all sections to hidden state and show loading
+  const loadingIndicator = summariesContent.querySelector(".loading-indicator");
+  const summaryCards = summariesContent.querySelector(".summary-cards-grid");
+  const categorySection = summariesContent.querySelector(
+    ".category-analysis-section"
+  );
+  const tipCard = summariesContent.querySelector(".tip-card");
+  const noDataMessage = summariesContent.querySelector(".no-data-message");
+
+  // Hide all sections and show loading
+  if (summaryCards) summaryCards.style.display = "none";
+  if (categorySection) categorySection.style.display = "none";
+  if (tipCard) tipCard.style.display = "none";
+  if (noDataMessage) noDataMessage.style.display = "none";
+  if (loadingIndicator) loadingIndicator.style.display = "block";
+
+  try {
+    const summaryData = await getCurrentSummary();
+    renderCurrentSummary(summaryData, summariesContent);
+  } catch (error) {
+    console.error("Failed to fetch summary data:", error);
+    renderSummaryError(summariesContent, "Unable to load your weekly summary");
   }
 };
