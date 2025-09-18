@@ -1,4 +1,5 @@
 import { register, login, logout } from "./auth.js";
+import { socketManager } from "./socket.js";
 import Swal from "sweetalert2";
 
 // Form validation
@@ -100,6 +101,8 @@ const handleRegister = async (container) => {
 };
 
 const handleLogout = () => {
+  // Disconnect socket before logging out
+  socketManager.disconnect();
   logout();
   window.dispatchEvent(
     new CustomEvent("authStateChanged", { detail: { loggedIn: false } })
