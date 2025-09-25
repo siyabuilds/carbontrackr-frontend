@@ -419,3 +419,381 @@ export const renderSummaryError = (
     noDataMessage.style.display = "block";
   }
 };
+
+// Target rendering functions
+export const renderTargetsView = (
+  currentTarget,
+  targetHistory,
+  currentSummary,
+  historicalBaseline = null
+) => {
+  const container = document.getElementById("targets-content");
+  if (!container) return;
+
+  // Hide loading indicator
+  const loadingIndicator = container.querySelector(".loading-indicator");
+  if (loadingIndicator) {
+    loadingIndicator.style.display = "none";
+  }
+
+  // Render current target section
+  renderCurrentTarget(container, currentTarget);
+
+  // Render progress section
+  renderTargetProgress(
+    container,
+    currentTarget,
+    currentSummary,
+    historicalBaseline
+  );
+
+  // Render history section
+  renderTargetHistory(container, targetHistory);
+};
+
+const renderCurrentTarget = (container, currentTarget) => {
+  const currentTargetSection = container.querySelector(
+    ".current-target-section"
+  );
+  if (!currentTargetSection) return;
+
+  if (!currentTarget) {
+    currentTargetSection.innerHTML = `
+      <div class="no-target-message">
+        <i class="fa-solid fa-bullseye"></i>
+        <h3>No Active Target</h3>
+        <p>Set a weekly reduction target to start tracking your progress!</p>
+        <button id="create-target-btn" class="create-target-btn">
+          <i class="fa-solid fa-plus"></i> Set Weekly Target
+        </button>
+      </div>
+    `;
+  } else {
+    const typeIcon =
+      currentTarget.targetType === "percentage"
+        ? "fa-percentage"
+        : "fa-weight-hanging";
+    const typeLabel =
+      currentTarget.targetType === "percentage"
+        ? "Percentage Reduction"
+        : "Absolute Reduction";
+    const valueText =
+      currentTarget.targetType === "percentage"
+        ? `${currentTarget.targetValue}%`
+        : `${currentTarget.targetValue} kg CO₂`;
+
+    currentTargetSection.innerHTML = `
+      <div class="active-target-card">
+        <div class="target-header">
+          <h3><i class="fa-solid ${typeIcon}"></i> ${typeLabel}</h3>
+          <div class="target-actions">
+            <button id="edit-target-btn" class="edit-btn" title="Edit Target">
+              <i class="fa-solid fa-edit"></i>
+            </button>
+            <button id="delete-target-btn" class="delete-btn" title="Delete Target">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="target-details">
+          <div class="target-value">
+            <span class="value">${valueText}</span>
+            <span class="label">Weekly Target</span>
+          </div>
+          
+          ${
+            currentTarget.description
+              ? `
+            <div class="target-description">
+              ${currentTarget.description}
+            </div>
+          `
+              : ""
+          }
+          
+          ${
+            currentTarget.categories && currentTarget.categories.length > 0
+              ? `
+            <div class="target-categories">
+              <strong>Focus Areas:</strong>
+              <div class="category-tags">
+                ${currentTarget.categories
+                  .map(
+                    (cat) => `<span class="category-tag ${cat}">${cat}</span>`
+                  )
+                  .join("")}
+              </div>
+            </div>
+          `
+              : ""
+          }
+          
+          <div class="target-meta">
+            Created: ${new Date(currentTarget.createdAt).toLocaleDateString()}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+};
+
+const renderTargetProgress = (
+  container,
+  currentTarget,
+  currentSummary,
+  historicalBaseline = null
+) => {
+  const progressSection = container.querySelector(".target-progress-section");
+  if (!progressSection || !currentTarget) {
+    if (progressSection) progressSection.style.display = "none";
+    return;
+  }
+
+  const progress = calculateTargetProgress(
+    currentTarget,
+    currentSummary,
+    historicalBaseline
+  );
+  if (!progress) {
+    progressSection.innerHTML = `
+      <div class="progress-placeholder">
+        <i class="fa-solid fa-chart-line"></i>
+        <p>Progress tracking will appear here once you log some activities this week.</p>
+      </div>
+    `;
+    progressSection.style.display = "block";
+    return;
+  }
+
+  // Determine colors and status based on progress and negative reduction
+  let progressColor = "#4caf50"; // Green for good progress
+  let statusText = "In Progress";
+  let statusIcon = "fa-clock";
+  let reductionCardClass = "";
+
+  if (progress.isNegativeReduction) {
+    progressColor = "#f44336"; // Red for negative reduction (more emissions than baseline - target)
+    statusText = "Above Baseline ⚠️";
+    statusIcon = "fa-exclamation-triangle";
+    reductionCardClass = "negative-reduction";
+  } else if (progress.isOnTrack) {
+    statusText = "Target Achieved ✨";
+    statusIcon = "fa-check-circle";
+  } else if (progress.progress > 100) {
+    statusText = "Exceeding Target 🚀";
+    statusIcon = "fa-trophy";
+    progressColor = "#2196f3"; // Blue for exceeding
+  } else if (progress.progress < 50) {
+    progressColor = "#ff9800"; // Orange for behind target
+  }
+
+  // Determine the type of target for display
+  const targetTypeText =
+    currentTarget.targetType === "percentage"
+      ? `${currentTarget.targetValue}% Reduction`
+      : `${currentTarget.targetValue} kg Reduction`;
+
+  progressSection.innerHTML = `
+    <div class="progress-card">
+      <div class="progress-header">
+        <h3><i class="fa-solid fa-chart-line"></i> Weekly Progress</h3>
+        <div class="progress-status ${
+          progress.isNegativeReduction ? "negative" : ""
+        }">
+          <i class="fa-solid ${statusIcon}"></i> ${statusText}
+        </div>
+      </div>
+      
+      <div class="progress-content">
+        <div class="target-info">
+          <div class="target-type">
+            <i class="fa-solid fa-bullseye"></i>
+            <span>${targetTypeText}</span>
+          </div>
+          <div class="progress-percentage ${
+            progress.isNegativeReduction ? "negative" : ""
+          }">${progress.progress.toFixed(1)}%</div>
+        </div>
+        
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${Math.min(
+              Math.abs(progress.progress),
+              100
+            )}%; background: ${progressColor}"></div>
+          </div>
+        </div>
+        
+        <div class="progress-metrics">
+          <div class="progress-metric">
+            <span class="metric-value">${progress.currentEmissions} kg</span>
+            <span class="metric-label">Current Emissions</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-value">${progress.targetEmissions} kg</span>
+            <span class="metric-label">Target Emissions</span>
+          </div>
+          <div class="progress-metric">
+            <span class="metric-value">${progress.baseline} kg</span>
+            <span class="metric-label">${
+              historicalBaseline ? "Historical Avg" : "Baseline"
+            }</span>
+          </div>
+          <div class="progress-metric ${reductionCardClass}">
+            <span class="metric-value ${
+              progress.isNegativeReduction ? "negative" : ""
+            }">${progress.reductionAchieved >= 0 ? "+" : ""}${
+    progress.reductionAchieved
+  } kg</span>
+            <span class="metric-label">Reduction Achieved</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  progressSection.style.display = "block";
+};
+
+const renderTargetHistory = (container, targetHistory) => {
+  const historySection = container.querySelector(".target-history-section");
+  if (!historySection) return;
+
+  if (!targetHistory || targetHistory.length === 0) {
+    historySection.innerHTML = `
+      <div class="no-history-message">
+        <i class="fa-solid fa-history"></i>
+        <p>No target history available yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const historyItems = targetHistory
+    .slice(0, 5)
+    .map((target) => {
+      const typeIcon =
+        target.targetType === "percentage"
+          ? "fa-percentage"
+          : "fa-weight-hanging";
+      const valueText =
+        target.targetType === "percentage"
+          ? `${target.targetValue}%`
+          : `${target.targetValue} kg CO₂`;
+      const statusIcon = target.isActive ? "fa-check-circle" : "fa-circle";
+      const statusText = target.isActive ? "Active" : "Completed";
+
+      return `
+      <div class="history-item ${target.isActive ? "active" : ""}">
+        <div class="history-icon">
+          <i class="fa-solid ${typeIcon}"></i>
+        </div>
+        <div class="history-content">
+          <div class="history-main">
+            <span class="history-value">${valueText}</span>
+            <span class="history-period">${target.targetType} reduction</span>
+          </div>
+          <div class="history-meta">
+            <span class="history-date">${new Date(
+              target.createdAt
+            ).toLocaleDateString()}</span>
+            <span class="history-status ${
+              target.isActive ? "active" : "completed"
+            }">
+              <i class="fa-solid ${statusIcon}"></i> ${statusText}
+            </span>
+          </div>
+        </div>
+      </div>
+    `;
+    })
+    .join("");
+
+  historySection.innerHTML = `
+    <h3><i class="fa-solid fa-history"></i> Target History</h3>
+    <div class="history-list">
+      ${historyItems}
+    </div>
+  `;
+};
+
+const calculateTargetProgress = (
+  currentTarget,
+  currentSummary,
+  historicalBaseline = null
+) => {
+  if (!currentTarget || !currentSummary) return null;
+
+  const currentEmissions = currentSummary.totalValue || 0;
+  let progress = 0;
+  let targetEmissions = 0;
+  let baseline = 0;
+
+  if (currentTarget.targetType === "percentage") {
+    // For percentage reduction, use historical baseline or reasonable fallback
+    baseline = historicalBaseline || Math.max(currentEmissions * 1.2, 10); // At least 20% higher than current or minimum 10kg
+
+    // Calculate target emissions based on percentage reduction from baseline
+    targetEmissions = baseline * (1 - currentTarget.targetValue / 100);
+
+    // Calculate progress: how much reduction we've achieved vs target reduction
+    const actualReduction = baseline - currentEmissions; // Can be negative
+    const targetReduction = baseline - targetEmissions;
+
+    if (targetReduction > 0) {
+      progress = (actualReduction / targetReduction) * 100;
+    } else {
+      progress = currentEmissions <= targetEmissions ? 100 : 0;
+    }
+  } else {
+    // Absolute target - targetValue is the amount to reduce
+    baseline =
+      historicalBaseline || currentEmissions + currentTarget.targetValue;
+    targetEmissions = Math.max(0, baseline - currentTarget.targetValue);
+
+    const actualReduction = baseline - currentEmissions; // Can be negative
+    progress =
+      currentTarget.targetValue > 0
+        ? (actualReduction / currentTarget.targetValue) * 100
+        : 0;
+  }
+
+  // Allow negative progress to show when emissions exceed baseline
+  progress = Math.max(-100, Math.min(200, progress));
+
+  const actualReduction = baseline - currentEmissions;
+  const targetReduction = baseline - targetEmissions;
+  const isNegativeReduction = actualReduction < 0; // More emissions than baseline
+
+  return {
+    progress: Math.round(progress * 10) / 10, // Round to 1 decimal place
+    currentEmissions: Math.round(currentEmissions * 100) / 100,
+    targetEmissions: Math.round(Math.max(0, targetEmissions) * 100) / 100,
+    baseline: Math.round(baseline * 100) / 100,
+    isOnTrack: currentEmissions <= targetEmissions,
+    reductionAchieved: Math.round(actualReduction * 100) / 100, // Can be negative
+    reductionTarget: Math.round(targetReduction * 100) / 100,
+    isNegativeReduction: isNegativeReduction,
+  };
+};
+
+export const renderTargetsError = (message = "Failed to load targets data") => {
+  const container = document.getElementById("targets-content");
+  if (!container) return;
+
+  const loadingIndicator = container.querySelector(".loading-indicator");
+  if (loadingIndicator) {
+    loadingIndicator.style.display = "none";
+  }
+
+  container.innerHTML = `
+    <div class="error-message">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <p>${message}</p>
+      <button onclick="window.location.reload()" class="retry-btn">
+        <i class="fa-solid fa-refresh"></i> Try Again
+      </button>
+    </div>
+  `;
+};

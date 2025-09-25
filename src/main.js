@@ -37,6 +37,7 @@ import { isTokenValid } from "./utils/validateToke.js";
 import { saveLastView, getLastView, clearLastView } from "./utils/lastView.js";
 import { socketManager } from "./socket.js";
 import { getCurrentUserId } from "./utils/decodeToken.js";
+import { initializeTargets } from "./targets.js";
 import Swal from "sweetalert2";
 
 let activityLogs = [];
@@ -186,6 +187,11 @@ const setupEventListeners = () => {
   document
     .getElementById("summaries-btn")
     .addEventListener("click", () => toggleView("summaries"));
+
+  // Targets view
+  document
+    .getElementById("targets-btn")
+    .addEventListener("click", () => toggleView("targets"));
 };
 
 const handleAddActivity = async () => {
@@ -352,6 +358,13 @@ const toggleView = async (viewType) => {
     summariesView.classList.add("active");
     setTimeout(() => {
       fetchAndDisplaySummary();
+    }, 100);
+  } else if (viewType === "targets") {
+    document.getElementById("targets-btn").classList.add("active");
+    const targetsView = document.getElementById("targets-view");
+    targetsView.classList.add("active");
+    setTimeout(() => {
+      initializeTargets();
     }, 100);
   }
 };
