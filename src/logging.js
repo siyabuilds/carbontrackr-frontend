@@ -98,3 +98,54 @@ export const getWeeklySummary = async (weekStart) => {
     throw error;
   }
 };
+
+// Reduction targets API functions
+export const getActiveTarget = async (period = "weekly") => {
+  try {
+    const response = await api.get(`/api/targets?period=${period}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching active target:", error);
+    throw error;
+  }
+};
+
+export const createTarget = async (targetData) => {
+  try {
+    const response = await api.post("/api/targets", targetData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating target:", error);
+    throw error;
+  }
+};
+
+export const updateTarget = async (targetId, targetData) => {
+  try {
+    const response = await api.put(`/api/targets/${targetId}`, targetData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating target:", error);
+    throw error;
+  }
+};
+
+export const deleteTarget = async (targetId) => {
+  try {
+    const response = await api.delete(`/api/targets/${targetId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting target:", error);
+    throw error;
+  }
+};
+
+export const getTargetHistory = async (period = "weekly") => {
+  try {
+    const response = await api.get(`/api/targets/history?period=${period}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching target history:", error);
+    throw error;
+  }
+};
