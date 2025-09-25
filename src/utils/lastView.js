@@ -5,6 +5,7 @@ const VALID_VIEWS = [
   "leaderboard",
   "streak",
   "summaries",
+  "targets",
 ];
 const DEFAULT_VIEW = "dashboard";
 
