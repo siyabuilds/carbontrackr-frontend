@@ -18,6 +18,7 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 - **filter.js**: Category filtering utilities and UI
 - **form.js**: Modal activity form (SweetAlert2)
 - **socket.js**: WebSocket management for real-time features and activity tips
+- **targets.js**: Reduction target management, CRUD operations, and UI integration
 - **utils/**: Token management, validation, view persistence, and user ID extraction
 
 ---
@@ -47,6 +48,14 @@ This document provides a complete reference for the CarbonTrackr frontend app, i
 
 - `GET    /api/summaries/current` → Get current week summary for authenticated user
 - `GET    /api/summaries/:weekStart` → Get summary for specific week (ISO date format)
+
+### Reduction Target Endpoints
+
+- `GET    /api/targets` → Get active reduction target for authenticated user
+- `POST   /api/targets` → Create a new reduction target
+- `PUT    /api/targets/:id` → Update an existing reduction target
+- `DELETE /api/targets/:id` → Delete (deactivate) a reduction target
+- `GET    /api/targets/history` → Get all reduction targets for user (including inactive)
 
 ---
 
@@ -121,6 +130,11 @@ The app includes WebSocket support for real-time features like activity tips and
 - `getCurrentStreak()` — Get 7-day activity streak (GET)
 - `getCurrentSummary()` — Get current week summary (GET)
 - `getWeeklySummary(weekStart)` — Get summary for specific week (GET)
+- `getActiveTarget(period)` — Get active reduction target (GET)
+- `createTarget(targetData)` — Create new reduction target (POST)
+- `updateTarget(targetId, targetData)` — Update existing target (PUT)
+- `deleteTarget(targetId)` — Delete (deactivate) target (DELETE)
+- `getTargetHistory(period)` — Get target history (GET)
 
 ### ui.js
 
@@ -131,6 +145,8 @@ The app includes WebSocket support for real-time features like activity tips and
 - `confirmDeleteActivity(activityName)` — SweetAlert2 confirm
 - `confirmClearAllActivities()` — SweetAlert2 confirm
 - `renderLeaderboard(data, container)` — Leaderboard table
+- `renderTargetsView(currentTarget, targetHistory, currentSummary, historicalBaseline)` — Render complete targets view
+- `renderTargetsError(message)` — Render error message for targets section
 
 ### chart.js
 
@@ -158,6 +174,16 @@ The app includes WebSocket support for real-time features like activity tips and
   - `logActivity(userId, category, activity)` — Emit activity for tip generation
   - `setTipCallback(callback)` — Set callback for tip responses
   - `disconnect()` — Close WebSocket connection
+
+### targets.js
+
+- `initializeTargets()` — Initialize targets functionality and load data
+- `showCreateTargetDialog()` — Display SweetAlert2 modal for creating targets
+- `showEditTargetDialog()` — Display modal for editing existing targets
+- `confirmDeleteTarget()` — Show confirmation dialog for target deletion
+- `setupTargetEventListeners()` — Set up event listeners for target buttons
+- `getCurrentTarget()` — Get currently active target data
+- `getCurrentSummaryData()` — Get current summary data for progress calculations
 
 ### utils/
 
@@ -234,6 +260,23 @@ number; // CO₂ in kg per activity unit
 }
 ```
 
+### ReductionTarget
+
+```js
+{
+  _id: string,
+  userId: string,
+  targetType: "percentage" | "absolute", // Type of reduction target
+  targetValue: number, // Percentage (0-100) or absolute value in kg CO₂
+  description?: string, // Optional target description
+  targetPeriod: "weekly" | "monthly", // Target timeframe
+  categories?: string[], // Optional array of focus categories
+  isActive: boolean, // Whether target is currently active
+  createdAt: string, // ISO timestamp
+  updatedAt: string  // ISO timestamp
+}
+```
+
 ---
 
 ## 💡 Usage Examples
@@ -271,6 +314,28 @@ const breakdown = calculateEmissionsByCategory(activityLogs);
 renderEmissionsChart(activityLogs, chartContainer, legendContainer);
 ```
 
+### Create Reduction Target
+
+```js
+const targetData = {
+  targetType: "percentage", // or "absolute"
+  targetValue: 20, // 20% reduction or 20kg CO₂ reduction
+  description: "Reduce transport emissions by cycling more",
+  targetPeriod: "weekly",
+  categories: ["Transport", "Food"], // Optional focus areas
+};
+await createTarget(targetData);
+```
+
+### Update Target Progress
+
+```js
+const activeTarget = await getActiveTarget("weekly");
+const currentSummary = await getCurrentSummary();
+// Progress calculation handled automatically in UI
+renderTargetsView(activeTarget.target, [], currentSummary.summary);
+```
+
 ---
 
 ## 🔄 Event System
@@ -280,6 +345,9 @@ renderEmissionsChart(activityLogs, chartContainer, legendContainer);
 - `click` on `.delete-btn` → `handleDeleteActivity()`
 - `change` on category filter → filter update
 - `authStateChanged` (CustomEvent) → login/logout UI switch
+- `click` on `#create-target-btn` → `showCreateTargetDialog()`
+- `click` on `#edit-target-btn` → `showEditTargetDialog()`
+- `click` on `#delete-target-btn` → `confirmDeleteTarget()`
 
 ---
 
@@ -297,5 +365,21 @@ renderEmissionsChart(activityLogs, chartContainer, legendContainer);
 - `getLeaderboard()` fetches ranked user emissions
 - `getAverageEmissions()` fetches average emissions by category
 - Both visualized in dashboard views
+
+## 🎯 Reduction Targets & Progress Tracking
+
+- Set weekly or monthly emission reduction goals
+- Choose between percentage reduction (relative to baseline) or absolute reduction (fixed kg CO₂)
+- Track progress with visual indicators and calculations
+- Target history maintains record of all goals (active and inactive)
+- Automatic progress calculations against current week's emissions
+- Integration with weekly analysis jobs for automated insights
+
+### Target Types
+
+- **Percentage Target**: Reduce emissions by X% compared to historical baseline
+- **Absolute Target**: Reduce emissions by X kg CO₂ from current levels
+- **Categories**: Optionally focus on specific emission categories (Transport, Food, etc.)
+- **Periods**: Weekly or monthly goal timeframes
 
 ---
